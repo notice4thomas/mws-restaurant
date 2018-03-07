@@ -30,23 +30,27 @@
 
   <!-- Beginning main -->
   <main id="maincontent">
-    <!-- Beginning map -->
-    <section id="map-container">
-      <div id="map"></div>
-    </section>
-    <!-- End map -->
     <!-- Beginning restaurant -->
     <section id="restaurant-container">
-      <h1 id="restaurant-name"></h1>
-      <img id="restaurant-img">
-      <p id="restaurant-cuisine"></p>
-      <p id="restaurant-address"></p>
-      <table id="restaurant-hours"></table>
+      <div class="width-limiter">
+          <h1 id="restaurant-name"></h1>
+          <img id="restaurant-img">
+          <p id="restaurant-cuisine"></p>
+            <!-- Beginning map -->
+            <section id="map-container">
+              <div id="map"></div>
+            </section>
+            <!-- End map -->
+          <p id="restaurant-address"></p>
+          <table id="restaurant-hours"></table>
+      </div>
     </section>
     <!-- end restaurant -->
     <!-- Beginning reviews -->
     <section id="reviews-container">
-      <ul id="reviews-list"></ul>
+      <div class="width-limiter">
+        <ul id="reviews-list"></ul>
+      </div>
     </section>
     <!-- End reviews -->
   </main>
