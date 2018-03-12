@@ -133,14 +133,30 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 }
 
 /**
+ * Create responsive image element.
+ */
+function createImageElement(imgUrl) {
+  const largeImage = imgUrl.replace('.', '_large.');
+  const mediumImage = imgUrl.replace('.', '_medium.');
+
+  const image = document.createElement('img');
+  image.className = 'restaurant-img'; 
+
+  // Add responsive image sizes
+  image.src = imgUrl;
+  image.srcset = `${imgUrl} 800w, ${largeImage} 650w, ${mediumImage} 360w`;
+  image.sizes = '(max-width: 650px) calc(100vw - 70px), 230px';
+
+  return image;
+}
+
+/**
  * Create restaurant HTML.
  */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
-  const image = document.createElement('img');
-  image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  let image = createImageElement(DBHelper.imageUrlForRestaurant(restaurant));
   li.append(image);
 
   const name = document.createElement('h1');
