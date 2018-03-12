@@ -1,8 +1,8 @@
 let restaurants,
   neighborhoods,
-  cuisines
-var map
-var markers = []
+  cuisines;
+var map;
+var markers = [];
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -75,12 +75,39 @@ window.initMap = () => {
     lat: 40.722216,
     lng: -73.987501
   };
+
   self.map = new google.maps.Map(document.getElementById('map'), {
     zoom: 12,
     center: loc,
-    scrollwheel: false
+    scrollwheel: false,
+    disableDefaultUI: true
   });
+
   updateRestaurants();
+}
+
+/**
+ * Remove all map's sub focusable elements from the tab index.
+ * This was a nightmare to make! (maybe im doing it wrong...)
+ */
+function removeMapsTabIndexs() {
+  let map = document.getElementById('map');
+
+  // Remove anchors from the tab index(mostly the footer info in the map).
+  Array.from(map.getElementsByTagName('a')).forEach( link => {
+    link.tabIndex = '-1';
+  });
+
+  // Remove markers from the tab index.
+  Array.from(map.getElementsByTagName('area')).forEach( marker => {
+    marker.tabIndex = '-1';
+  });
+
+  // Remove a div that google adds for some reason from the tab index.
+  map.querySelectorAll('*[tabindex="0"]')[0].tabIndex = -1;
+
+  // Remove the Iframe from the tab index
+  map.getElementsByTagName('iframe')[0].tabIndex = -1;
 }
 
 /**
@@ -103,7 +130,9 @@ updateRestaurants = () => {
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
     }
-  })
+  });
+
+  setTimeout(removeMapsTabIndexs, 1000);
 }
 
 /**
@@ -156,7 +185,9 @@ function createImageElement(imgUrl) {
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
+  // Create responsive and accessible image element
   let image = createImageElement(DBHelper.imageUrlForRestaurant(restaurant));
+  image.alt = restaurant.name;
   li.append(image);
 
   const name = document.createElement('h1');

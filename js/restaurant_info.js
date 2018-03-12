@@ -2,6 +2,30 @@ let restaurant;
 var map;
 
 /**
+ * Remove all map's sub focusable elements from the tab index.
+ * This was a nightmare to make! (maybe im doing it wrong...)
+ */
+function removeMapsTabIndexs() {
+  let map = document.getElementById('map');
+
+  // Remove anchors from the tab index(mostly the footer info in the map).
+  Array.from(map.getElementsByTagName('a')).forEach( link => {
+    link.tabIndex = '-1';
+  });
+
+  // Remove markers from the tab index.
+  Array.from(map.getElementsByTagName('area')).forEach( marker => {
+    marker.tabIndex = '-1';
+  });
+
+  // Remove a div that google adds for some reason from the tab index.
+  map.querySelectorAll('*[tabindex="0"]')[0].tabIndex = -1;
+
+  // Remove the Iframe from the tab index
+  map.getElementsByTagName('iframe')[0].tabIndex = -1;
+}
+
+/**
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
@@ -12,10 +36,17 @@ window.initMap = () => {
       self.map = new google.maps.Map(document.getElementById('map'), {
         zoom: 16,
         center: restaurant.latlng,
-        scrollwheel: false
+        scrollwheel: false,
+        disableDefaultUI: true
       });
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+      
+      self.map.addListener('tilesloaded', () => {
+        // Run this a second after the map was loaded since there is no good event or callback to know
+        // for sure that everithing we need was loaded.
+        setTimeout(removeMapsTabIndexs, 1000);
+      });
     }
   });
 }
@@ -57,7 +88,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
-  // Add responsive image sizes
+  // Create responsive and accessible image element
   const image = document.getElementById('restaurant-img');
   const imgUrl = DBHelper.imageUrlForRestaurant(restaurant);
   const largeImage = imgUrl.replace('.', '_large.');
@@ -65,6 +96,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   image.src = imgUrl;
   image.srcset = `${imgUrl} 800w, ${largeImage} 650w, ${mediumImage} 360w`;
   image.sizes = '(min-width: 1460px) 650px, (min-width: 1024px) calc(50vw - 80px), (min-width: 725px) 650px, calc(100vw - 60px)';
+  image.alt = restaurant.name;
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -133,10 +165,17 @@ createReviewHTML = (review) => {
 
   const rating = document.createElement('span');
   rating.className = 'rating';
+  rating.role = 'img';
+  // For some reason VoiceOver skips the "rating" element, a quick search revealed that it might be a bug with SVG,
+  // Anyways, adding a 'role' of 'img' to the span turns out to be a nice solution.
+  rating.setAttribute('role', 'img');
+  rating.setAttribute('aria-label', `Rated ${review.rating} out of 5`);
+
   // Add Star SVG for each rating point.
   for(let i = 0; i < review.rating; i++) {
     rating.innerHTML += '<svg width="14" viewBox="0 0 576 512"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg>';
   }
+
   li.appendChild(rating);
 
   const date = document.createElement('span');
