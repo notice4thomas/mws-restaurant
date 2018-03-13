@@ -62,7 +62,18 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   text-transform: uppercase;
 }
 
-/* ====================== Helpers ====================== */
+/* ================ Helpers & general ================ */
+.skip-link {
+  position: absolute;
+  top: -50px;
+  left: 0;
+  background: #fff;
+  padding: 10px;
+}
+
+.skip-link:focus {
+  top: 0;
+}
 
 .width-limiter {
   max-width: 650px;
