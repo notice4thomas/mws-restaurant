@@ -69,19 +69,19 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   margin: 0 auto;
 }
 
-/* ====================== Navigation ====================== */
-nav {
+/* =================== Navigation =================== */
+#logo-banner {
   height: 80px;
   background-color: #252831;
   display: flex;  /* center everithing by using flexbox */
 }
 
-nav h1 {
+#logo-banner h1 {
   /* In flexbox margin auto aligns vertically and horizontally to the center */
   margin: auto;
 }
 
-nav h1 a {
+#logo-banner h1 a {
   color: #fff;
   font-size: 14pt;
   font-weight: 200;
@@ -107,9 +107,12 @@ nav h1 a {
 
 /* Add a slash symbol (/) before/behind each list item */
 #breadcrumb li+li:before {
-    padding: 8px;
-    color: black;
-    content: "/\00a0";
+  display: inline-block;
+  margin: 0 10px;
+  transform: rotate(15deg);
+  border-right: .1em solid currentColor;
+  height: .8em;
+  content: '';
 }
 
 /* Add a color to all links inside the list */
@@ -187,14 +190,13 @@ nav h1 a {
   max-width: 100%;
   min-width: 100%;
 }
-#restaurants-list li h1 {
+#restaurants-list li h3 {
   color: #f18200;
   font-family: Arial,sans-serif;
   font-size: 14pt;
   font-weight: 200;
   line-height: 1.3;
   margin: 20px 0 10px;
-  text-transform: uppercase;
 }
 #restaurants-list p {
   margin: 0;
@@ -250,7 +252,6 @@ nav h1 a {
   font-weight: 200;
   letter-spacing: 0;
   margin: 0 0 30px;
-  text-transform: uppercase;
   line-height: 1.1;
 }
 
@@ -293,7 +294,7 @@ nav h1 a {
 
 #reviews-container h2 {
   color: #f58500;
-  font-size: 24pt;
+  font-size: 20pt;
   font-weight: 300;
   letter-spacing: -1px;
   margin-bottom: 30px;
@@ -378,7 +379,7 @@ nav h1 a {
 }
 
 @media screen and (max-width: 700px) {
-  nav h1 a {
+  #logo-banner h1 a {
     font-size: 10pt;
     letter-spacing: 5px;
   }

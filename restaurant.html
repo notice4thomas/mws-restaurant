@@ -16,13 +16,15 @@
   <!-- Beginning header -->
   <header>
     <!-- Beginning nav -->
-    <nav>
+    <div id="logo-banner">
       <h1><a href="/">Restaurant Reviews</a></h1>
-    </nav>
+    </div>
     <!-- Beginning breadcrumb -->
-    <ul id="breadcrumb" >
-      <li><a href="/">Home</a></li>
-    </ul>
+    <nav>
+      <ol id="breadcrumb" aria-label="Breadcrumb">
+        <li><a href="/">Home</a></li>
+      </ol>
+    </nav>
     <!-- End breadcrumb -->
     <!-- End nav -->
   </header>
@@ -35,14 +37,16 @@
       <div class="width-limiter">
           <h1 id="restaurant-name"></h1>
           <img id="restaurant-img">
-          <p id="restaurant-cuisine"></p>
+          <div id="restaurant-cuisine"></div>
           <!-- Beginning map -->
           <section id="map-container" role="application" aria-hidden="true">
             <div id="map"></div>
           </section>
           <!-- End map -->
-          <p id="restaurant-address"></p>
-          <table id="restaurant-hours"></table>
+          <h3 id="restaurant-address-desc" hidden>Address</h3>
+          <p id="restaurant-address" aria-describedby="restaurant-address-desc"></p>
+          <h3 id="restaurant-hours-desc" hidden>Hours</h3>
+          <dl id="restaurant-hours" aria-describedby="restaurant-hours-desc"></dl>
       </div>
     </section>
     <!-- end restaurant -->
