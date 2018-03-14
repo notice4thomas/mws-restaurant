@@ -1,29 +1,6 @@
-let restaurant;
-var map;
-
-/**
- * Remove all map's sub focusable elements from the tab index.
- * This was a nightmare to make! (maybe im doing it wrong...)
- */
-function removeMapsTabIndexs() {
-  let map = document.getElementById('map');
-
-  // Remove anchors from the tab index(mostly the footer info in the map).
-  Array.from(map.getElementsByTagName('a')).forEach( link => {
-    link.tabIndex = '-1';
-  });
-
-  // Remove markers from the tab index.
-  Array.from(map.getElementsByTagName('area')).forEach( marker => {
-    marker.tabIndex = '-1';
-  });
-
-  // Remove a div that google adds for some reason from the tab index.
-  map.querySelectorAll('*[tabindex="0"]')[0].tabIndex = -1;
-
-  // Remove the Iframe from the tab index
-  map.getElementsByTagName('iframe')[0].tabIndex = -1;
-}
+let restaurant,
+    map,
+    breadcrumbFilled = false;
 
 /**
  * Initialize Google map, called from HTML.
@@ -39,14 +16,7 @@ window.initMap = () => {
         scrollwheel: false,
         disableDefaultUI: true
       });
-      fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-      
-      self.map.addListener('tilesloaded', () => {
-        // Run this a second after the map was loaded since there is no good event or callback to know
-        // for sure that everithing we need was loaded.
-        setTimeout(removeMapsTabIndexs, 1000);
-      });
     }
   });
 }
@@ -73,7 +43,8 @@ fetchRestaurantFromURL = (callback) => {
         return;
       }
       fillRestaurantHTML();
-      callback(null, restaurant)
+      fillBreadcrumb();
+      if (callback) callback(null, restaurant);
     });
   }
 }
@@ -198,10 +169,14 @@ createReviewHTML = (review) => {
  * Add restaurant name to the breadcrumb navigation menu
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
+  // Make sure this only happens once since this will be run twice.
+  if(breadcrumbFilled) return;
+
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
   breadcrumb.appendChild(li);
+  breadcrumbFilled = true;
 }
 
 /**
@@ -219,3 +194,15 @@ getParameterByName = (name, url) => {
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+
+/**
+ * Register the service worker.
+ */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch((error) => {
+    // registration failed :(
+    console.error('ServiceWorker registration failed: ', error);
+  });
+}
+
+fetchRestaurantFromURL();

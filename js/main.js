@@ -87,30 +87,6 @@ window.initMap = () => {
 }
 
 /**
- * Remove all map's sub focusable elements from the tab index.
- * This was a nightmare to make! (maybe im doing it wrong...)
- */
-function removeMapsTabIndexs() {
-  let map = document.getElementById('map');
-
-  // Remove anchors from the tab index(mostly the footer info in the map).
-  Array.from(map.getElementsByTagName('a')).forEach( link => {
-    link.tabIndex = '-1';
-  });
-
-  // Remove markers from the tab index.
-  Array.from(map.getElementsByTagName('area')).forEach( marker => {
-    marker.tabIndex = '-1';
-  });
-
-  // Remove a div that google adds for some reason from the tab index.
-  map.querySelectorAll('*[tabindex="0"]')[0].tabIndex = -1;
-
-  // Remove the Iframe from the tab index
-  map.getElementsByTagName('iframe')[0].tabIndex = -1;
-}
-
-/**
  * Update page and map for current restaurants.
  */
 updateRestaurants = () => {
@@ -131,8 +107,6 @@ updateRestaurants = () => {
       fillRestaurantsHTML();
     }
   });
-
-  setTimeout(removeMapsTabIndexs, 1000);
 }
 
 /**
@@ -218,6 +192,9 @@ createRestaurantHTML = (restaurant) => {
  * Add markers for current restaurants to the map.
  */
 addMarkersToMap = (restaurants = self.restaurants) => {
+  // Don't run if google maps didn't load yet.
+  if(!window.google) return;
+
   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
@@ -227,3 +204,16 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 }
+
+/**
+ * Register the service worker.
+ */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch((error) => {
+    // registration failed :(
+    console.error('ServiceWorker registration failed: ', error);
+  });
+}
+
+// Update restaurants list.
+updateRestaurants();
