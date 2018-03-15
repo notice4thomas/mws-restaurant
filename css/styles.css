@@ -2,10 +2,14 @@
 /* CSS Document */
 
 body,td,th,p{
-	font-family: Arial, Helvetica, sans-serif;
+  /* Cool snippet that uses available system fonts to save bandwidth(alot of it) */
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	font-size: 10pt;
 	color: #333;
-	line-height: 1.5;
+  line-height: 1.5;
+
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -15,7 +19,6 @@ body {
 }
 
 ul, li {
-	font-family: Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	color: #333;
 }
@@ -35,7 +38,7 @@ a img{
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: Arial, Helvetica, sans-serif;
+  font-weight: normal;
   margin: 0 0 20px;
 }
 
@@ -90,12 +93,12 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 #logo-banner h1 {
   /* In flexbox margin auto aligns vertically and horizontally to the center */
   margin: auto;
+  line-height: 1em;
 }
 
 #logo-banner h1 a {
   color: #fff;
   font-size: 14pt;
-  font-weight: 200;
   letter-spacing: 10px;
   text-transform: uppercase;
 }
@@ -157,7 +160,6 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 .filter-options h2 {
   color: white;
   font-size: 1rem;
-  font-weight: normal;
   line-height: 1;
   margin: 20px 20px;
 }
@@ -165,7 +167,6 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 .filter-options select {
   background-color: white;
   border: 1px solid #fff;
-  font-family: Arial,sans-serif;
   font-size: 11pt;
   height: 35px;
   letter-spacing: 0;
@@ -186,14 +187,20 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   flex-wrap: wrap;
   justify-content: center;
 }
-#restaurants-list li {
-  background-color: #fff;
-  margin: 15px;
+
+/* Using flexbox to help align the "view details" button to the bottom */
+#restaurants-list article {
+  display: flex;
+  flex-direction: column;
   min-height: 380px;
   max-width: 270px;
   padding: 20px;
+  margin: 15px;
+
+  background-color: #fff;
   border-radius: 5px;
 }
+
 #restaurants-list .restaurant-img {
   background-color: #ccc;
   display: block;
@@ -201,25 +208,29 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   max-width: 100%;
   min-width: 100%;
 }
-#restaurants-list li h3 {
+
+#restaurants-list article h3 {
   color: #f18200;
-  font-family: Arial,sans-serif;
   font-size: 14pt;
-  font-weight: 200;
   line-height: 1.3;
   margin: 20px 0 10px;
 }
+
+#restaurants-list .address-wrap {
+  margin-bottom: 10px;
+}
+
 #restaurants-list p {
   margin: 0;
   font-size: 11pt;
 }
-#restaurants-list li a {
-  display: block;
-  margin: 15px 0 0;
+
+#restaurants-list article a {
+  margin-top: auto;
   padding: 10px 0;
 
   color: #fff;
-  font-size: 10pt;
+  font-weight: bold;
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
@@ -258,9 +269,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 
 #restaurant-name {
   color: #f18200;
-  font-family: Arial,sans-serif;
   font-size: 20pt;
-  font-weight: 200;
   letter-spacing: 0;
   margin: 0 0 30px;
   line-height: 1.1;
@@ -276,16 +285,14 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 
 #restaurant-cuisine {
-  background-color: #333;
   color: #ddd;
   font-size: 12pt;
-  font-weight: 300;
   letter-spacing: 10px;
+  padding: 5px 0;
   margin: 0 0 20px;
-  padding: 2px 0;
   text-align: center;
   text-transform: uppercase;
-	width: 100%;
+  background-color: #333;
 }
 
 #restaurant-hours td {
@@ -306,7 +313,6 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 #reviews-container h2 {
   color: #f58500;
   font-size: 20pt;
-  font-weight: 300;
   letter-spacing: -1px;
   margin-bottom: 30px;
 }
@@ -402,7 +408,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 
 @media screen and (max-width: 650px) {
-  #restaurants-list li {
+  #restaurants-list article {
     width: 100%;
     max-width: none;
     margin: 0 0 30px;

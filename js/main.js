@@ -1,7 +1,8 @@
 let restaurants,
   neighborhoods,
-  cuisines;
-var map;
+  cuisines,
+  map;
+
 var markers = [];
 
 /**
@@ -168,18 +169,27 @@ createRestaurantHTML = (restaurant) => {
   image.setAttribute('aria-hidden', 'true');
   article.append(image);
 
+  // Restaurant name
   const name = document.createElement('h3');
   name.innerHTML = restaurant.name;
   article.append(name);
 
+  // Address/neighberhood wrap
+  const addressWrap = document.createElement('div');
+  addressWrap.className = 'address-wrap';
+  article.append(addressWrap);
+
+  // Neighberhood
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
-  article.append(neighborhood);
+  addressWrap.append(neighborhood);
 
+  // Address
   const address = document.createElement('p');
   address.innerHTML = restaurant.address;
-  article.append(address);
+  addressWrap.append(address);
 
+  // Details button
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
