@@ -336,7 +336,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 #reviews-list .review .username {
   font-size: 18px;
   color: #0275d8;
-  margin-right: 20px;
+  margin-right: 10px;
 }
 
 #reviews-list .review .rating {
@@ -412,5 +412,9 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
     width: 100%;
     max-width: none;
     margin: 0 0 30px;
+  }
+
+  #reviews-list .review .username {
+    font-size: 16px;
   }
 }
