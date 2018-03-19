@@ -24,7 +24,7 @@ ul, li {
 }
 
 a {
-	color: orange;
+	color: #ffa94d;
 	text-decoration: none;
 }
 
@@ -86,31 +86,43 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 /* =================== Navigation =================== */
 #logo-banner {
   height: 80px;
-  background-color: #252831;
+  background-color: #373b40;
   display: flex;  /* center everithing by using flexbox */
+  align-items: center;
+  justify-content: center;
 }
 
-#logo-banner h1 {
-  /* In flexbox margin auto aligns vertically and horizontally to the center */
-  margin: auto;
-  line-height: 1em;
+#logo {
+  /* Display block to remove the default image padding bottom */
+  display: block;
+  /* Margin top to center the logo to the text */
+  margin-top: -5px;
+  width: 234px;
 }
 
-#logo-banner h1 a {
-  color: #fff;
-  font-size: 14pt;
-  letter-spacing: 10px;
-  text-transform: uppercase;
+#header .heading-wrap {
+  padding: 10px 0;
+  background-color: #ecf0f3;
+  color: #495057;
+  border-bottom: 1px solid #d2d2d2;
+}
+
+#header h1 {
+  text-align: center;
+  font-size: 1.7em;
+  text-transform: capitalize;
+  margin: 0;
 }
 
 #breadcrumb {
+  list-style: none;
+  margin: 0 0;
+  padding: 0 30px;
+  
   display: flex;
   align-items: center;
   height: 50px;
   width: 50%;
-  list-style: none;
-  font-size: 17px;
-  margin: 0;
   background-color: #eee;
 }
 
@@ -150,7 +162,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 
 /* ====================== Restaurant Filtering ====================== */
 .filter-options {
-  background-color: #3397DB;
+  background-color: #4fa6e8;
 
   display: flex;
   align-items: center;
@@ -235,7 +247,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   text-decoration: none;
   text-transform: uppercase;
 
-  background-color: orange;
+  background-color: #ffa94d;
   box-shadow: 0 3px 1px #eee;
   border-radius: 3px;
 }
@@ -333,6 +345,10 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   border-radius: 5px;
 }
 
+#reviews-list li:last-child {
+  margin: 0;
+}
+
 #reviews-list .review .username {
   font-size: 18px;
   color: #0275d8;
@@ -346,7 +362,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 
 #reviews-list .review .rating svg {
   margin-right: 3px;
-  fill: #f58500;
+  fill: #ffa94d;
 }
 
 #reviews-list .review .date {
@@ -396,14 +412,22 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 
 @media screen and (max-width: 700px) {
-  #logo-banner h1 a {
-    font-size: 10pt;
-    letter-spacing: 5px;
+  #logo {
+    width: 200px;
+  }
+
+  #breadcrumb {
+    padding-left: 15px;
+  }
+
+  #restaurant-container,
+  #reviews-container {
+    padding: 30px 15px;
   }
 
   .filter-options {
     flex-direction: column;
-    padding-bottom: 10px;
+    padding-bottom: 15px;
   }
 }
 
