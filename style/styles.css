@@ -97,7 +97,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   display: block;
   /* Margin top to center the logo to the text */
   margin-top: -5px;
-  width: 234px;
+  height: 30px;
 }
 
 #header .heading-wrap {
@@ -413,7 +413,8 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 
 @media screen and (max-width: 700px) {
   #logo {
-    width: 200px;
+    margin-top: -3px;
+    height: 25px;
   }
 
   #breadcrumb {
