@@ -1,0 +1,13 @@
+{
+  "name": "Restaurant Reviews",
+  "short_name": "ResReviews",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3f3f3",
+  "theme_color": "#373b40",
+  "description": "The app that helps you find the best food in town!",
+  "icons": [{
+    "src": "style/touch.svg",
+    "sizes": "48x48 72x72 96x96 144x144 168x168 192x192 512x512"
+  }]
+}

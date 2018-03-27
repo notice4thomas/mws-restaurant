@@ -6,7 +6,8 @@ const urlsToCache = [
   '/styles.css',
   '/style/logo.svg',
   '/main.js',
-  '/data/restaurants.json'
+  '/data/restaurants.json',
+  'manifest.webmanifest'
 ];
 
 // Installation
