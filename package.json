@@ -1,0 +1,23 @@
+{
+  "name": "restaurant-reviews",
+  "version": "0.0.1",
+  "description": "Restaurant reviews project for Udacity",
+  "main": "index.js",
+  "repository": "https://github.com/samuelgozi/mws-restaurant-stage-1",
+  "author": "Samuel Elgozi <samu.elgozi@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "rm -rf ./dist && NODE_ENV=production webpack --config webpack.config.js -p",
+    "dev": "webpack-dev-server --config webpack.config.js --host 0.0.0.0 --mode=development"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^4.5.1",
+    "css-loader": "^0.28.11",
+    "eslint": "^4.19.1",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "webpack": "^4.3.0",
+    "webpack-cli": "^2.0.13",
+    "webpack-dev-server": "^3.1.1"
+  }
+}

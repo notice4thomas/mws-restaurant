@@ -1,8 +1,4 @@
-let restaurants;
-let neighborhoods;
-let cuisines;
-let map;
-
+const DBHelper = require('./dbhelper');
 self.markers = [];
 
 /**
@@ -127,25 +123,6 @@ function updateRestaurants() {
 }
 
 /**
- * Initialize Google map, called from HTML.
- */
-window.initMap = () => {
-  let loc = {
-    lat: 40.722216,
-    lng: -73.987501
-  };
-
-  self.map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
-    center: loc,
-    scrollwheel: false,
-    disableDefaultUI: true
-  });
-
-  updateRestaurants();
-};
-
-/**
  * Create responsive image element.
  */
 function createImageElement(imgUrl) {
@@ -208,18 +185,25 @@ function createRestaurantHTML(restaurant) {
 }
 
 /**
- * Register the service worker.
+ * Initialize Google map, called from HTML.
  */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch((error) => {
-    // registration failed :(
-    console.error('ServiceWorker registration failed: ', error);
-  });
-}
+window.initMap = () => {
+  let loc = {
+    lat: 40.722216,
+    lng: -73.987501
+  };
 
-/**
- * Fetch neighborhoods and cuisines as soon as the page is loaded.
- */
+  self.map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 12,
+    center: loc,
+    scrollwheel: false,
+    disableDefaultUI: true
+  });
+
+  updateRestaurants();
+};
+
+// Fetch neighborhoods and cuisines as soon as the page is loaded.
 document.addEventListener('DOMContentLoaded', () => {
   fetchNeighborhoods();
   fetchCuisines();
