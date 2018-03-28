@@ -14,129 +14,96 @@ class DBHelper {
 
   /**
    * Fetch all restaurants.
+   * Returns a promise. will throw exceptions if any.
    */
-  static fetchRestaurants(callback) {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', DBHelper.DATABASE_URL);
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json.restaurants;
-        callback(null, restaurants);
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`);
-        callback(error, null);
-      }
-    };
-    xhr.send();
+  static async fetchRestaurants() {
+    const response =  await (await fetch(this.DATABASE_URL)).json();
+    return response.restaurants;
   }
 
   /**
    * Fetch a restaurant by its ID.
+   * Returns a promise. will throw exceptions if any.
    */
-  static fetchRestaurantById(id, callback) {
-    // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        const restaurant = restaurants.find(r => r.id == id);
-        if (restaurant) { // Got the restaurant
-          callback(null, restaurant);
-        } else { // Restaurant does not exist in the database
-          callback('Restaurant does not exist', null);
-        }
-      }
-    });
+  static async fetchRestaurantById(id) {
+    const restaurants = await this.fetchRestaurants();
+    const result = restaurants.find(r => r.id == id);
+    // If no match, throw an error.
+    if(!result) throw Error('Restaurant does not exist');
+
+    return result;
   }
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
+   * Returns a promise. will throw exceptions if any.
    */
-  static fetchRestaurantByCuisine(cuisine, callback) {
-    // Fetch all restaurants  with proper error handling
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        // Filter restaurants to have only given cuisine type
-        const results = restaurants.filter(r => r.cuisine_type == cuisine);
-        callback(null, results);
-      }
-    });
+  static async fetchRestaurantByCuisine(cuisine) {
+    const restaurants = await this.fetchRestaurants();
+    // Filter restaurants to have only given cuisine type and return.
+    return restaurants.filter(r => r.cuisine_type == cuisine);
   }
 
   /**
    * Fetch restaurants by a neighborhood with proper error handling.
+   * Returns a promise. will throw exceptions if any.
    */
-  static fetchRestaurantByNeighborhood(neighborhood, callback) {
+  static async fetchRestaurantByNeighborhood(neighborhood) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        // Filter restaurants to have only given neighborhood
-        const results = restaurants.filter(r => r.neighborhood == neighborhood);
-        callback(null, results);
-      }
-    });
+    const restaurants = await this.fetchRestaurants();
+    // Filter restaurants to have only given neighborhood and return.
+    return restaurants.filter(r => r.neighborhood == neighborhood);
   }
 
   /**
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
+   * Returns a promise. will throw exceptions if any.
    */
-  static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
+  static async fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        let results = restaurants;
-        if (cuisine != 'all') { // filter by cuisine
-          results = results.filter(r => r.cuisine_type == cuisine);
-        }
-        if (neighborhood != 'all') { // filter by neighborhood
-          results = results.filter(r => r.neighborhood == neighborhood);
-        }
-        callback(null, results);
-      }
-    });
+    let results = await this.fetchRestaurants();
+
+    // filter by cuisine
+    if (cuisine != 'all') {
+      results = results.filter(r => r.cuisine_type == cuisine);
+    }
+
+    // filter by neighborhood
+    if (neighborhood != 'all') {
+      results = results.filter(r => r.neighborhood == neighborhood);
+    }
+
+    return results;
   }
 
   /**
    * Fetch all neighborhoods with proper error handling.
+   * Returns a promise. will throw exceptions if any.
    */
-  static fetchNeighborhoods(callback) {
+  static async fetchNeighborhoods() {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        // Get all neighborhoods from all restaurants
-        const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
-        // Remove duplicates from neighborhoods
-        const uniqueNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
-        callback(null, uniqueNeighborhoods);
-      }
-    });
+    let restaurants = await this.fetchRestaurants();
+
+    // Get all neighborhoods from all restaurants
+    const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
+
+    // Remove duplicates from neighborhoods and return.
+    return neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
   }
 
   /**
    * Fetch all cuisines with proper error handling.
+   * Returns a promise. will throw exceptions if any.
    */
-  static fetchCuisines(callback) {
+  static async fetchCuisines() {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        // Get all cuisines from all restaurants
-        const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
-        // Remove duplicates from cuisines
-        const uniqueCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i);
-        callback(null, uniqueCuisines);
-      }
-    });
+    let restaurants = await this.fetchRestaurants();
+
+    // Get all cuisines from all restaurants
+    const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
+  
+    // Remove duplicates from cuisines and return.
+    return cuisines.filter((v, i) => cuisines.indexOf(v) == i);
   }
 
   /**
@@ -169,7 +136,6 @@ class DBHelper {
     );
     return marker;
   }
-
 }
 
 module.exports = DBHelper;

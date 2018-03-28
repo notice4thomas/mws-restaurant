@@ -18,13 +18,11 @@ function fillNeighborhoodsHTML(neighborhoods = self.neighborhoods) {
  * Fetch all neighborhoods and set their HTML.
  */
 function fetchNeighborhoods() {
-  DBHelper.fetchNeighborhoods((error, neighborhoods) => {
-    if (error) { // Got an error
-      console.error(error);
-    } else {
-      self.neighborhoods = neighborhoods;
-      fillNeighborhoodsHTML();
-    }
+  DBHelper.fetchNeighborhoods().then(neighborhoods => {
+    self.neighborhoods = neighborhoods;
+    fillNeighborhoodsHTML();
+  }).catch(error => {
+    console.error(error);
   });
 }
 
@@ -74,13 +72,11 @@ function fillRestaurantsHTML(restaurants = self.restaurants) {
  * Fetch all cuisines and set their HTML.
  */
 function fetchCuisines() {
-  DBHelper.fetchCuisines((error, cuisines) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      self.cuisines = cuisines;
-      fillCuisinesHTML();
-    }
+  DBHelper.fetchCuisines().then(cuisines => {
+    self.cuisines = cuisines;
+    fillCuisinesHTML();
+  }).catch(error => {
+    console.error(error);
   });
 }
 
@@ -102,7 +98,7 @@ function resetRestaurants(restaurants) {
 /**
  * Update page and map for current restaurants.
  */
-function updateRestaurants() {
+self.updateRestaurants = () => {
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -112,15 +108,13 @@ function updateRestaurants() {
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
 
-  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      resetRestaurants(restaurants);
-      fillRestaurantsHTML();
-    }
+  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood).then(restaurants => {
+    resetRestaurants(restaurants);
+    fillRestaurantsHTML();
+  }).catch(error => {
+    console.error(error);
   });
-}
+};
 
 /**
  * Create responsive image element.
@@ -200,7 +194,7 @@ window.initMap = () => {
     disableDefaultUI: true
   });
 
-  updateRestaurants();
+  self.updateRestaurants();
 };
 
 // Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -210,4 +204,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Update restaurants list.
-updateRestaurants();
+self.updateRestaurants();
