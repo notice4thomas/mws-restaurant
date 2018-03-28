@@ -1,6 +1,7 @@
 const path = require('path');
-let ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ImageminPlugin = require('imagemin-webpack-plugin').default;
 
 module.exports = {
   entry: ['./src/js/main.js', './src/style/styles.css'],
@@ -32,6 +33,10 @@ module.exports = {
       from: './src/assets',
       ignore: ['.DS_Store']
     }]),
-    new ExtractTextPlugin('styles.css'),
+    new ImageminPlugin({
+      test: /\.(jpe?g|png|gif|svg)$/i,
+      disable: process.env.NODE_ENV !== 'production'
+    }),
+    new ExtractTextPlugin('styles.css')
   ]
 };
