@@ -2,6 +2,17 @@
 Udacity project for the Mobile Web Specialist Nanodegree Program.
 This project is also hosted at: https://restaurant-reviews-26769.firebaseapp.com/
 
+## Instructions
+To build the project first install all the dependencies and run the `build` script:
+
+```npm run build```
+
+or
+
+```yarn build```
+
+The output will be on the `dist` folder.
+
 **Note:** The stage 2 Development Server needs to be running on the machine at port 1337 in order for this to work.
 
 ## Project overview and notes
