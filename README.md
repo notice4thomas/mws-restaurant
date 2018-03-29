@@ -1,9 +1,11 @@
 # Restaurant Reviews
 Udacity project for the Mobile Web Specialist Nanodegree Program.
-This project is also hosted at: https://restaurant-reviews-26769.firebaseapp.com/
 
 ## Instructions
 In order to test the project you can either build and serve it locally or use the hosted version(with the Local Development API Server running on your machine.)
+
+### Test by using my hosted version
+This should be pretty simple, just install and run the "Local Development API Server" on your machine and visit: https://restaurant-reviews-26769.firebaseapp.com/
 
 ### Build it and test locally
 To build and run locally you need to:
@@ -31,9 +33,6 @@ Now the project is running on localhost:8000 but we have one thing left.
 
 #### Step 2: Run the "Local Development API Server"
 Run the "Local Development API Server" which can be found here: https://github.com/udacity/mws-restaurant-stage-2
-
-## Test using the hosted version
-This should be pretty simple, just install and run the "Local Development API Server" on your machine and visit: https://restaurant-reviews-26769.firebaseapp.com/
 
 ## Projects directory guide
 All the code resides inside the `src` folder.
