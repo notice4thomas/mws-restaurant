@@ -2,6 +2,48 @@ const restAPI = require('./rest_api');
 self.markers = [];
 
 /**
+ * lazy loading images.
+ */
+function lazyLoadImages() {
+  const images = document.querySelectorAll('.restaurant-img');
+
+  // If we don't have support for intersection observer, loads the images immediately
+  if (!('IntersectionObserver' in window)) {
+    images.forEach(image => loadImage(image));
+    return;
+  }
+
+  function loadImage(image) {
+    // Update the images attributes.
+    image.src = image.dataset.src;
+
+    // On restaurants without a photo there won't be srcset and sizes attributes so return;
+    if(!image.dataset.srcset) return;
+    image.srcset = image.dataset.srcset;
+    image.sizes = image.dataset.sizes;
+  }
+
+  // Function that runs when images are intersecting.
+  function onIntersection(entries) {
+    entries.forEach(entry => {
+      // If the image is not intersecting return.
+      if(!entry.isIntersecting) return;
+      observer.unobserve(entry.target); // Stop observing this image.
+      loadImage(entry.target);
+    });
+  }
+
+  const observer = new IntersectionObserver(onIntersection, {
+    rootMargin: '50px 0px',
+    threshold: 0.01
+  });
+
+  images.forEach(image => {
+    observer.observe(image);
+  });
+}
+
+/**
  * Set neighborhoods HTML.
  */
 function fillNeighborhoodsHTML(neighborhoods = self.neighborhoods) {
@@ -98,7 +140,7 @@ function resetRestaurants(restaurants) {
 /**
  * Update page and map for current restaurants.
  */
-self.updateRestaurants = () => {
+window.updateRestaurants = () => {
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -111,6 +153,9 @@ self.updateRestaurants = () => {
   restAPI.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood).then(restaurants => {
     resetRestaurants(restaurants);
     fillRestaurantsHTML();
+    
+    // Start the images lazy loader.
+    lazyLoadImages();
   }).catch(error => {
     console.error(error);
   });
@@ -125,17 +170,16 @@ function createImageElement(imgUrl) {
 
   // True when there is no image.
   if(imgUrl === '/img/undefined.jpg') {
-    image.src = '/style/no_photo.svg';
+    image.dataset.src = '/style/no_photo.svg';
     return image;
   }
 
   const largeImage = imgUrl.replace('.', '_large.');
   const mediumImage = imgUrl.replace('.', '_medium.');
 
-  // Add responsive image sizes
-  image.src = imgUrl;
-  image.srcset = `${imgUrl} 800w, ${largeImage} 650w, ${mediumImage} 360w`;
-  image.sizes = '(max-width: 650px) calc(100vw - 70px), 230px';
+  image.dataset.sizes = '(max-width: 650px) calc(100vw - 70px), 230px';
+  image.dataset.srcset = `${imgUrl} 800w, ${largeImage} 650w, ${mediumImage} 360w`;
+  image.dataset.src = imgUrl;
 
   return image;
 }
@@ -193,7 +237,7 @@ window.initMap = () => {
     lng: -73.987501
   };
 
-  self.map = new google.maps.Map(document.getElementById('map'), {
+  window.map = new google.maps.Map(document.getElementById('map'), {
     zoom: 12,
     center: loc,
     scrollwheel: false,
@@ -201,11 +245,9 @@ window.initMap = () => {
   });
 };
 
-// Fetch neighborhoods and cuisines as soon as the page is loaded.
-document.addEventListener('DOMContentLoaded', () => {
-  fetchNeighborhoods();
-  fetchCuisines();
-});
+// Fetch data
+fetchNeighborhoods();
+fetchCuisines();
 
 // Update restaurants list.
-self.updateRestaurants();
+window.updateRestaurants();
