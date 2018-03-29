@@ -155,9 +155,31 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 
 /* ====================== Map ====================== */
 #map {
-  height: 400px;
+  height: 200px;
   width: 100%;
   background-color: #ccc;
+  transition: height 0.3s ease-out;
+}
+
+@keyframes bounce {
+  from { transform: translateY(-5px) }
+  to { transform: translateY(5px) }
+}
+
+#map .loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: bounce 1s ease 2s infinite alternate;
+}
+
+#map .loading div {
+  color: #60676E;
+  margin-top: 10px;
+  font-weight: bold;
 }
 
 /* ====================== Restaurant Filtering ====================== */

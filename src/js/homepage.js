@@ -246,6 +246,8 @@ window.initMap = () => {
     scrollwheel: false,
     disableDefaultUI: true
   });
+
+  document.getElementById('map').style.height = '400px';
 };
 
 // Fetch data
