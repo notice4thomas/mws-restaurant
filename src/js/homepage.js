@@ -1,4 +1,4 @@
-const DBHelper = require('./dbhelper');
+const restAPI = require('./rest_api');
 self.markers = [];
 
 /**
@@ -18,7 +18,7 @@ function fillNeighborhoodsHTML(neighborhoods = self.neighborhoods) {
  * Fetch all neighborhoods and set their HTML.
  */
 function fetchNeighborhoods() {
-  DBHelper.fetchNeighborhoods().then(neighborhoods => {
+  restAPI.fetchNeighborhoods().then(neighborhoods => {
     self.neighborhoods = neighborhoods;
     fillNeighborhoodsHTML();
   }).catch(error => {
@@ -49,7 +49,7 @@ function addMarkersToMap(restaurants = self.restaurants) {
 
   restaurants.forEach(restaurant => {
     // Add marker to the map
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
+    const marker = restAPI.mapMarkerForRestaurant(restaurant, self.map);
     google.maps.event.addListener(marker, 'click', () => {
       window.location.href = marker.url;
     });
@@ -72,7 +72,7 @@ function fillRestaurantsHTML(restaurants = self.restaurants) {
  * Fetch all cuisines and set their HTML.
  */
 function fetchCuisines() {
-  DBHelper.fetchCuisines().then(cuisines => {
+  restAPI.fetchCuisines().then(cuisines => {
     self.cuisines = cuisines;
     fillCuisinesHTML();
   }).catch(error => {
@@ -108,7 +108,7 @@ self.updateRestaurants = () => {
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
 
-  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood).then(restaurants => {
+  restAPI.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood).then(restaurants => {
     resetRestaurants(restaurants);
     fillRestaurantsHTML();
   }).catch(error => {
@@ -120,11 +120,17 @@ self.updateRestaurants = () => {
  * Create responsive image element.
  */
 function createImageElement(imgUrl) {
-  const largeImage = imgUrl.replace('.', '_large.');
-  const mediumImage = imgUrl.replace('.', '_medium.');
-
   const image = document.createElement('img');
   image.className = 'restaurant-img'; 
+
+  // True when there is no image.
+  if(imgUrl === '/img/undefined.jpg') {
+    image.src = '/style/no_photo.svg';
+    return image;
+  }
+
+  const largeImage = imgUrl.replace('.', '_large.');
+  const mediumImage = imgUrl.replace('.', '_medium.');
 
   // Add responsive image sizes
   image.src = imgUrl;
@@ -144,7 +150,7 @@ function createRestaurantHTML(restaurant) {
   li.appendChild(article);
 
   // Create responsive and accessible image element
-  let image = createImageElement(DBHelper.imageUrlForRestaurant(restaurant));
+  let image = createImageElement(restAPI.imageUrlForRestaurant(restaurant));
   image.alt = restaurant.name;
   image.setAttribute('aria-hidden', 'true');
   article.append(image);
@@ -172,7 +178,7 @@ function createRestaurantHTML(restaurant) {
   // Details button
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
-  more.href = DBHelper.urlForRestaurant(restaurant);
+  more.href = restAPI.urlForRestaurant(restaurant);
   article.append(more);
 
   return li;
@@ -193,8 +199,6 @@ window.initMap = () => {
     scrollwheel: false,
     disableDefaultUI: true
   });
-
-  self.updateRestaurants();
 };
 
 // Fetch neighborhoods and cuisines as soon as the page is loaded.

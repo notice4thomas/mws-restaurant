@@ -1,37 +1,79 @@
+const idbAPI = require('./idb_api');
+let restaurantsList;
+
 /**
- * Common database helper functions.
+ * helper for the restaurants api
  */
-class DBHelper {
+class restAPI {
 
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-    const baseUrl = (new URL(window.location.href)).origin;
-    return `${baseUrl}/data/restaurants.json`;
+    return 'http://localhost:1337/restaurants';
   }
 
   /**
    * Fetch all restaurants.
-   * Returns a promise. will throw exceptions if any.
+   * Returns a promise. will throw fetch exceptions.
    */
   static async fetchRestaurants() {
-    const response =  await (await fetch(this.DATABASE_URL)).json();
-    return response.restaurants;
+    // Make sure we only make this request once.
+    if(restaurantsList) return restaurantsList;
+
+    // Fire async tasks before doing anything.
+    const cachedRestaurants = idbAPI.getAll();
+    const fetchedRestaurants = fetch(this.DATABASE_URL).then(response => response.json());
+
+    // Update the cache after the network request is finished.
+    fetchedRestaurants.then(restaurants => {
+      idbAPI.addMany(restaurants);
+      idbAPI.cleanUp(); // Remove old restaurants.
+    }).catch(error => console.error(error));
+
+    // Get the restaurants from the cache first, and if it is empty, then wait for the network.
+    let restaurants = new Promise(async resolve => {
+      if((await cachedRestaurants).length) {
+        resolve(cachedRestaurants);
+        return;
+      }
+
+      resolve(fetchedRestaurants);
+    });
+
+    // Save them in a var so we know the request was already made.
+    restaurantsList = restaurants;
+
+    return restaurantsList;
   }
 
   /**
    * Fetch a restaurant by its ID.
-   * Returns a promise. will throw exceptions if any.
+   * Returns a promise. will throw fetch exceptions.
    */
   static async fetchRestaurantById(id) {
-    const restaurants = await this.fetchRestaurants();
-    const result = restaurants.find(r => r.id == id);
-    // If no match, throw an error.
-    if(!result) throw Error('Restaurant does not exist');
+    // TODO: I need to DRY this a bit.
 
-    return result;
+    // Fire async tasks before doing anything.
+    const cachedRestaurant = idbAPI.get(id);
+    const fetchedRestaurant = fetch(this.DATABASE_URL + '/' + id).then(response => response.json());
+
+    // Update the cache after the network request is finished.
+    fetchedRestaurant.then(restaurant => {
+      idbAPI.add(restaurant);
+      idbAPI.cleanUp(); // Remove old restaurants.
+    }).catch(error => console.error(error));
+
+    // Get the restaurants from the cache first, and if it is empty, then wait for the network.
+    // and return it.
+    return new Promise(async resolve => {
+      if(await cachedRestaurant) {
+        resolve(cachedRestaurant);
+        return;
+      }
+      resolve(fetchedRestaurant);
+    });
   }
 
   /**
@@ -117,7 +159,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph}`);
+    return (`/img/${restaurant.photograph}.jpg`);
   }
 
   /**
@@ -130,7 +172,7 @@ class DBHelper {
     const marker = new google.maps.Marker({
       position: restaurant.latlng,
       title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
+      url: this.urlForRestaurant(restaurant),
       map: map,
       animation: google.maps.Animation.DROP}
     );
@@ -138,4 +180,4 @@ class DBHelper {
   }
 }
 
-module.exports = DBHelper;
+module.exports = restAPI;

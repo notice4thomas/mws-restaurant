@@ -5,8 +5,8 @@ const urlsToCache = [
   '/restaurant.html',
   '/styles.css',
   '/style/logo.svg',
+  '/style/no_photo.svg',
   '/main.js',
-  '/data/restaurants.json',
   'manifest.webmanifest'
 ];
 
@@ -36,7 +36,7 @@ self.addEventListener('activate', event => {
 // Caches and returns images by request
 function serveImage(request) {
   return caches.open(imagesCacheName).then(cache => {
-    return cache.match(request.url).then(response => {
+    return caches.match(request.url).then(response => {
       if(response) return response;
 
       return fetch(request).then(networkResponse => {

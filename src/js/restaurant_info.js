@@ -1,11 +1,13 @@
-const DBHelper = require('./dbhelper');
-let breadcrumbFilled = false;
+const restAPI = require('./rest_api');
+let restaurantRequest;
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
-function fillRestaurantHoursHTML (operatingHours = self.restaurant.operating_hours) {
+async function fillRestaurantHoursHTML () {
+  const operatingHours = (await restaurantRequest).operating_hours;
   const hours = document.getElementById('restaurant-hours');
+
   for (let key in operatingHours) {
     const row = document.createElement('tr');
 
@@ -69,7 +71,8 @@ function createReviewHTML(review) {
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-function fillReviewsHTML(reviews = self.restaurant.reviews) {
+async function fillReviewsHTML() {
+  const reviews = (await restaurantRequest).reviews;
   const container = document.querySelector('#reviews-container .width-limiter');
 
   if (!reviews) {
@@ -88,21 +91,31 @@ function fillReviewsHTML(reviews = self.restaurant.reviews) {
 /**
  * Create restaurant HTML and add it to the webpage
  */
-function fillRestaurantHTML(restaurant = self.restaurant) {
+async function fillRestaurantHTML() {
+  let restaurant = await restaurantRequest;
+
   const name = document.getElementById('restaurant-name');
-  name.innerHTML = restaurant.name;
+  name.innerHTML = await restaurant.name;
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
   // Create responsive and accessible image element
   const image = document.getElementById('restaurant-img');
-  const imgUrl = DBHelper.imageUrlForRestaurant(restaurant);
-  const largeImage = imgUrl.replace('.', '_large.');
-  const mediumImage = imgUrl.replace('.', '_medium.');
-  image.src = imgUrl;
-  image.srcset = `${imgUrl} 800w, ${largeImage} 650w, ${mediumImage} 360w`;
-  image.sizes = '(min-width: 1460px) 650px, (min-width: 1024px) calc(50vw - 80px), (min-width: 725px) 650px, calc(100vw - 60px)';
+  const imgUrl = restAPI.imageUrlForRestaurant(restaurant);
+
+  // True when there is no image.
+  if(imgUrl === '/img/undefined.jpg') {
+    image.src = '/style/no_photo.svg';
+
+  // Else when there is an image.
+  } else {
+    const largeImage = imgUrl.replace('.', '_large.');
+    const mediumImage = imgUrl.replace('.', '_medium.');
+    image.src = imgUrl;
+    image.srcset = `${imgUrl} 800w, ${largeImage} 650w, ${mediumImage} 360w`;
+    image.sizes = '(min-width: 1460px) 650px, (min-width: 1024px) calc(50vw - 80px), (min-width: 725px) 650px, calc(100vw - 60px)';
+  }
   image.alt = restaurant.name;
   image.setAttribute('aria-hidden', 'true');
 
@@ -114,21 +127,19 @@ function fillRestaurantHTML(restaurant = self.restaurant) {
     fillRestaurantHoursHTML();
   }
   // fill reviews
-  fillReviewsHTML();
+  await fillReviewsHTML();
 }
 
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-function fillBreadcrumb (restaurant=self.restaurant) {
-  // Make sure this only happens once since this will be run twice.
-  if(breadcrumbFilled) return;
+async function fillBreadcrumb() {
+  let restaurant = await restaurantRequest;
 
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
   breadcrumb.appendChild(li);
-  breadcrumbFilled = true;
 }
 
 /**
@@ -149,47 +160,43 @@ function getParameterByName(name, url) {
 /**
  * Get current restaurant from page URL.
  */
-function fetchRestaurantFromURL(callback) {
-  if (self.restaurant) { // restaurant already fetched!
-    callback(null, self.restaurant);
-    return;
-  }
+async function fetchRestaurantFromURL() {
+  if (restaurantRequest) return restaurantRequest;
 
   const id = getParameterByName('id');
 
-  if (!id) { // no id found in URL
-    let error = 'No restaurant id in URL';
-    callback(error, null);
-
-  } else {
-    DBHelper.fetchRestaurantById(id).then(restaurant => {
-      self.restaurant = restaurant;
-      fillRestaurantHTML();
-      fillBreadcrumb();
-      if (callback) callback(null, restaurant);
-    }).catch(error => {
-      console.error(error);
-    });
+  // no id found in URL
+  if (!id) {
+    console.error('No restaurant id in URL');
+    return;
   }
+
+  try {
+    restaurantRequest = restAPI.fetchRestaurantById(id);
+  } catch(error) {
+    console.error(error);
+  }
+    
+  await fillRestaurantHTML();
+  await fillBreadcrumb();
 }
 
 /**
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
-  fetchRestaurantFromURL((error, restaurant) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: restaurant.latlng,
-        scrollwheel: false,
-        disableDefaultUI: true
-      });
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-    }
+  restaurantRequest.then(restaurant => {
+    self.map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 16,
+      center: restaurant.latlng,
+      scrollwheel: false,
+      disableDefaultUI: true
+    });
+    restAPI.mapMarkerForRestaurant(restaurant, self.map);
+
+  }).catch(error => {
+    console.error(error);
   });
 };
 
-fetchRestaurantFromURL();
+fetchRestaurantFromURL().catch(error => console.error(error));
