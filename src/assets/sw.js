@@ -3,10 +3,12 @@ const imagesCacheName = 'restaurant-reviews-images';
 const urlsToCache = [
   '/',
   '/restaurant.html',
+  '/main.js',
   '/styles.css',
   '/style/logo.svg',
   '/style/no_photo.svg',
-  '/main.js',
+  '/style/loading_image.svg',
+  '/style/no_connection.svg',
   'manifest.webmanifest'
 ];
 
@@ -33,15 +35,26 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Caches and returns images by request
+// Caches and returns images by request.
 function serveImage(request) {
   return caches.open(imagesCacheName).then(cache => {
+    // Try to get the image from the cache, if not cached try to fetch it, and if there is a connection issue
+    // show the "no_connection" image instead.
     return caches.match(request.url).then(response => {
       if(response) return response;
 
-      return fetch(request).then(networkResponse => {
-        cache.put(request.url, networkResponse.clone());
-        return networkResponse;
+      return new Promise(async resolve => {
+        try {
+          // Try to make a network request.
+          const networkResponse = await fetch(request);
+          cache.put(request.url, networkResponse.clone());
+          resolve(networkResponse);
+  
+        } catch(error) {
+          // If the fetch request didnt work, return a placeholder.
+          resolve(caches.match('/style/no_connection.svg'));
+          console.error(error);
+        }
       });
     });
   });

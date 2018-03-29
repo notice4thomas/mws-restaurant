@@ -181,6 +181,9 @@ function createImageElement(imgUrl) {
   image.dataset.srcset = `${imgUrl} 800w, ${largeImage} 650w, ${mediumImage} 360w`;
   image.dataset.src = imgUrl;
 
+  // Add placeholder image.
+  image.src = '/style/loading_image.svg';
+
   return image;
 }
 
