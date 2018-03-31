@@ -3,7 +3,8 @@ const imagesCacheName = 'restaurant-reviews-images';
 const urlsToCache = [
   '/',
   '/restaurant.html',
-  '/main.js',
+  '/home.js',
+  '/restaurant.js',
   '/styles.css',
   '/style/logo.svg',
   '/style/no_photo.svg',

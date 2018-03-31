@@ -4,10 +4,15 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
 
 module.exports = {
-  entry: ['./src/js/main.js', './src/style/styles.css'],
+  entry: {
+    home: './src/js/home.js',
+    restaurant: './src/js/restaurant.js',
+    style: './src/style/styles.css',
+  },
+
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'main.js'
+    path: path.resolve(__dirname, 'dist/'),
+    filename: '[name].js'
   },
 
   module: {

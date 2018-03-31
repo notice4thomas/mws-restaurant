@@ -8,73 +8,69 @@
   <title>Restaurant Info</title>
 
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="styles.css" type="text/css">
+  <link rel="stylesheet" href="/styles.css" type="text/css">
 </head>
 
 <body class="inside">
   <a href="#maincontent" class="skip-link">Skip to restaurant's details</a>
-  <!-- Beginning header -->
   <header>
     <div id="logo-banner">
       <a href="/">
         <img id="logo" src="style/logo.svg" alt="Restaurant Reviews">
       </a>
     </div>
-    <!-- Beginning breadcrumb -->
+
     <nav>
       <ol id="breadcrumb" aria-label="Breadcrumb">
         <li><a href="/">Home</a></li>
       </ol>
     </nav>
-    <!-- End breadcrumb -->
-    <!-- End nav -->
   </header>
-  <!-- End header -->
 
-  <!-- Beginning main -->
   <main id="maincontent">
-    <!-- Beginning restaurant -->
     <section id="restaurant-container">
       <div class="width-limiter">
           <h1 id="restaurant-name"></h1>
           <img id="restaurant-img">
           <div id="restaurant-cuisine"></div>
-          <!-- Beginning map -->
+
           <section id="map-container" role="application" aria-hidden="true">
             <div id="map"></div>
           </section>
-          <!-- End map -->
+
           <h3 id="restaurant-address-desc" hidden>Address</h3>
           <p id="restaurant-address" aria-describedby="restaurant-address-desc"></p>
           <h3 id="restaurant-hours-desc" hidden>Hours</h3>
           <table id="restaurant-hours" aria-describedby="restaurant-hours-desc"></table>
       </div>
     </section>
-    <!-- end restaurant -->
-    <!-- Beginning reviews -->
+
     <section id="reviews-container">
       <div class="width-limiter">
         <h2>Reviews</h2>
         <ul id="reviews-list"></ul>
       </div>
     </section>
-    <!-- End reviews -->
   </main>
-  <!-- End main -->
 
-  <!-- Beginning footer -->
   <footer id="footer">
     Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
   </footer>
-  <!-- End footer -->
 
-  <!-- Beginning scripts -->
-  <!-- Main javascript file -->
-  <script type="text/javascript" src="main.js"></script>
-  <!-- Google Maps -->
+
+  <script type="text/javascript" src="/restaurant.js"></script>
+  <script>
+    /*
+    * Register the service worker.
+    */
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch((error) => {
+        // registration failed :(
+        console.error('ServiceWorker registration failed: ', error);
+      });
+    }
+  </script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBUq4x8U2rGSQtD_Gkl4BAjGxaEqTjFm3M&libraries=places&callback=initMap"></script>
-  <!-- End scripts -->
-
 </body>
 
 </html>
