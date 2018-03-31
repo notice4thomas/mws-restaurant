@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "rm -rf ./dist && NODE_ENV=production webpack --config webpack.config.js -p && rm - rf ./dist/style.js",
+    "build": "rm -rf ./dist && NODE_ENV=production webpack --config webpack.config.js -p && rm -rf ./dist/style.js",
     "dev": "webpack-dev-server --config webpack.config.js --host 0.0.0.0 --mode=development",
     "start": "rm -rf ./dist && NODE_ENV=production webpack --config webpack.config.js -p && http-serve ./dist --gzip -o"
   },
