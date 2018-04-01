@@ -93,9 +93,6 @@ function fillRestaurantHTML(restaurant) {
   const title = document.getElementById('restaurant-name');
   title.innerHTML = restaurant.name;
 
-  // Replace the image placeholder with a responsive photo.
-  document.getElementById('restaurant-img').replaceWith(createImageElement(restaurant));
-
   // Set the restaurant's cuisine
   document.getElementById('restaurant-cuisine').innerHTML = restaurant.cuisine_type;
 
@@ -104,6 +101,14 @@ function fillRestaurantHTML(restaurant) {
 
   // Set the restaurant's opening hours
   document.getElementById('restaurant-hours').innerHTML = createRestaurantHoursHTML(restaurant);
+
+  // Replace the image placeholder with a responsive photo.
+  // If there is no photo then change the placeholder to "no image".
+  if(restaurant.photograph === undefined) {
+    document.getElementById('restaurant-img').src = '/style/no_photo.svg';
+    return;
+  }
+  document.getElementById('restaurant-img').replaceWith(createImageElement(restaurant));
 }
 
 /**
