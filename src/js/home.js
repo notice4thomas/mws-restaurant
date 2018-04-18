@@ -206,7 +206,6 @@ window.initMap = () => {
     scrollwheel: false,
     disableDefaultUI: true
   });
-  mapElement.style.height = '400px';
 };
 
 fetchAndRenderFilters().then(() => window.updateRestaurants());

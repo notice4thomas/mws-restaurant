@@ -155,10 +155,11 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 
 /* ====================== Map ====================== */
 #map {
-  height: 200px;
+  height: 400px;
   width: 100%;
   background-color: #ccc;
   transition: height 0.3s ease-out;
+  will-change: contents;
 }
 
 @keyframes bounce {
@@ -174,6 +175,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   align-items: center;
   justify-content: center;
   animation: bounce 1s ease 2s infinite alternate;
+  will-change: transform;
 }
 
 #map .loading div {
@@ -295,6 +297,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   background-color: #ccc;
   height: 100%;
   width: 100%;
+  will-change: contents;
 }
 
 .inside #footer {
