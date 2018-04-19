@@ -7,7 +7,8 @@ module.exports = {
   entry: {
     home: './src/js/home.js',
     restaurant: './src/js/restaurant.js',
-    style: './src/style/styles.css',
+    'home-styles': './src/style/home.css',
+    'restaurant-styles': './src/style/restaurant.css',
   },
 
   output: {
@@ -42,6 +43,9 @@ module.exports = {
       test: /\.(jpe?g|png|gif|svg)$/i,
       disable: process.env.NODE_ENV !== 'production'
     }),
-    new ExtractTextPlugin('styles.css')
+    new ExtractTextPlugin({
+      allChunks: true,
+      filename: '[name].css',
+    })
   ]
 };
