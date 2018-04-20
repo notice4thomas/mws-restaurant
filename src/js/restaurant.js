@@ -148,14 +148,28 @@ window.initMap = () => {
     self.map = new google.maps.Map(document.getElementById('map'), {
       zoom: 16,
       center: restaurant.latlng,
-      scrollwheel: false,
-      disableDefaultUI: true
+      scrollwheel: false
     });
     restAPI.mapMarkerForRestaurant(restaurant, self.map);
 
   }).catch(error => {
     console.error(error);
   });
+};
+
+/*
+ * Load map on user's request.
+ */
+window.loadMap = () => {
+  // Create and add the script tag.
+  let scriptTag = document.createElement('script');
+  scriptTag.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBUq4x8U2rGSQtD_Gkl4BAjGxaEqTjFm3M&libraries=places&callback=initMap';
+  document.body.appendChild(scriptTag);
+
+  // Change the buttons text and disable it.
+  let button = document.getElementById('load-map');
+  button.disabled = true;
+  button.getElementsByTagName('div')[0].innerHTML = 'Loading map...';
 };
 
 fetchRestaurantFromURL().catch(error => console.error(error));

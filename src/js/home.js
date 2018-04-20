@@ -203,9 +203,24 @@ window.initMap = () => {
       lat: 40.722216,
       lng: -73.987501
     },
-    scrollwheel: false,
-    disableDefaultUI: true
+    scrollwheel: false
   });
+  addMarkersToMap();
+};
+
+/*
+ * Load map on user's request.
+ */
+window.loadMap = () => {
+  // Create and add the script tag.
+  let scriptTag = document.createElement('script');
+  scriptTag.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBUq4x8U2rGSQtD_Gkl4BAjGxaEqTjFm3M&libraries=places&callback=initMap';
+  document.body.appendChild(scriptTag);
+
+  // Change the buttons text and disable it.
+  let button = document.getElementById('load-map');
+  button.disabled = true;
+  button.getElementsByTagName('div')[0].innerHTML = 'Loading map...';
 };
 
 fetchAndRenderFilters().then(() => window.updateRestaurants());

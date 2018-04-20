@@ -27,9 +27,12 @@
   <main id="maincontent" tabindex="-1">
     <section id="map-container" role="application" aria-hidden="true">
       <div id="map">
-        <div class="loading">
-          <svg fill="#60676E" height="48" width="48" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
-          <div>LOADING MAP</div>
+        <div class="placeholder-bg"></div>
+        <div class="load-map-wrap">
+          <button id="load-map" tabindex="-1" onclick="loadMap()">
+            <svg fill="#60676E" height="48" width="48" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+            <div>Click to load the map</div>
+          </button>
         </div>
       </div>
     </section>
@@ -63,7 +66,6 @@
       });
     }
   </script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBUq4x8U2rGSQtD_Gkl4BAjGxaEqTjFm3M&libraries=places&callback=initMap"></script>
 </body>
 
 </html>

@@ -8,6 +8,7 @@ const urlsToCache = [
   '/home-styles.css',
   '/restaurant-styles.css',
   '/style/logo.svg',
+  '/style/map-placeholder.svg',
   '/style/no_photo.svg',
   '/style/loading_image.svg',
   '/style/no_connection.svg',

@@ -140,26 +140,56 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 
 /* ====================== Map ====================== */
-@keyframes bounce {
-  from { transform: translateY(-5px) }
-  to { transform: translateY(5px) }
+#map {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  background-color: #ccc;
+  transition: height 0.3s ease-out;
+  will-change: contents;
+  overflow: hidden; /* to keep the background blur effect within this div */
 }
 
-#map .loading {
+#map .placeholder-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+
+  background: url('style/map-placeholder.svg') center center;
+  background-size: cover;
+  filter: blur(10px);
+}
+
+#map .load-map-wrap {
+  position: absolute;
   width: 100%;
   height: 100%;
   display: flex;
+}
+
+#load-map {
+  display: flex;
+  margin: auto;
+  padding: 10px;
+
+  cursor: pointer;
+  border: none;
+  font-size: inherit;
+  font-weight: bold;
+  color: #60676E;
+
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  animation: bounce 1s ease 2s infinite alternate;
-  will-change: transform;
+
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-#map .loading div {
-  color: #60676E;
+#load-map div {
+  will-change: contents;
   margin-top: 10px;
-  font-weight: bold;
 }
 
 /* ====================== Restaurant Details ====================== */
