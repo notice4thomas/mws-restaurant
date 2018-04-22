@@ -193,14 +193,14 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 
 /* ====================== Restaurant Details ====================== */
-.inside header {
+#header {
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 1000;
 }
 
-.inside #map-container {
+#map-container {
   background: blue none repeat scroll 0 0;
   height: calc(100% - 80px);
   position: fixed;
@@ -209,14 +209,14 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   width: 50%;
 }
 
-.inside #map {
+#map {
   background-color: #ccc;
   height: 100%;
   width: 100%;
   will-change: contents;
 }
 
-.inside #footer {
+#footer {
   width: 50%;
 }
 
@@ -263,6 +263,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   margin-top: 130px;
 }
 
+/* ====================== Restaurant reviews ====================== */
 #reviews-container h2 {
   color: #f58500;
   font-size: 20pt;
@@ -270,20 +271,123 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   margin-bottom: 30px;
 }
 
-#no-reviews {
-  display: none;
-  font-size: 18px;
-  text-align: center;
-  width: 100%;
-  padding: 20px 20px;
+
+/* Leave review */
+#leave-review {
   background-color: #fff;
   border-radius: 5px;
 }
 
-#reviews-list:empty + #no-reviews {
-  display: block;
+#leave-review header {
+  display: flex;
+  align-items: center;
+  align-content: flex-start;
+  padding: 20px;
+  border-bottom: 1px solid #ecf0f3;
 }
 
+#leave-review header svg {
+  margin-right: 15px;
+  color: #4fa6e8;
+}
+
+#leave-review header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+#leave-review form {
+  padding: 20px;
+}
+
+#leave-review input,
+#leave-review textarea {
+  width: 100%;
+  font-size: 16px;
+  padding: 0.5em;
+  border: 1px solid #dde4e8;
+  border-radius: 3px;
+  margin-bottom: 15px;
+}
+
+#leave-review input:last-child {
+  margin-bottom: 0;
+}
+
+#leave-review .submit {
+  cursor: pointer;
+  background-color: #ffa94d;
+  border: none;
+  font-size: 10pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 10px;
+  box-shadow: 0 3px 1px #eee;
+}
+
+#leave-review .submit:active {
+  background-color: #e89b48;
+}
+
+#leave-review .comments {
+  height: 5em;
+}
+
+/* Rating */
+#leave-review .rating, #leave-review .rating input {
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+#leave-review .rating input {
+  display: none;
+}
+
+#leave-review .rating {
+  margin-bottom: 15px;
+}
+
+#leave-review .rating .title {
+  font-size: 16px;
+  float: left;
+  margin-right: 5px;
+}
+
+#leave-review .stars-wrap {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+#leave-review .star {
+  display: inline-block;
+  color: #d9d9d9;
+}
+
+#leave-review .rating input:checked ~ .star,
+#leave-review .rating input:hover ~ .star {
+  color: #ffa94d;
+}
+
+/* validation errors */
+#leave-review .error {
+  padding: 10px;
+  margin: -10px 0 15px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #f37575;
+  box-shadow: 0 3px 1px #eee;
+  border-radius: 3px;
+}
+
+#leave-review .error:empty {
+  display: none
+}
+
+/* Already left reviews */
 #reviews-list {
   margin: 0;
   padding: 0;
@@ -324,14 +428,14 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   color: #757575;
 }
 
-#reviews-list .review .body {
+#reviews-list .review .comments {
   margin-top: 15px;
   font-size: 11pt;
 }
 
 /* ====================== Responsive styles ====================== */
 @media screen and (max-width: 1024px) {
-  .inside header {
+  #header {
     position: relative;
   }
 
@@ -339,7 +443,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
     width: 100%;
   }
 
-  .inside #map-container {
+  #map-container {
     position: relative;
     height: 150px;
     width: 100%;
@@ -361,7 +465,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
     margin-bottom: 25px;
   }
 
-  .inside #footer {
+  #footer {
     width: 100%;
   }
 }

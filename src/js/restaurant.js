@@ -42,7 +42,7 @@ function createReviewHTML(review) {
       <span class="username">${review.name}</span>
       <span class="rating" role="img" aria-label="Rated ${review.rating} out of 5">${createRatingSVG(review.rating)}</span>
       <span class="date">${review.date}</span>
-      <p class="body">${review.comments}</p>
+      <p class="comments">${review.comments}</p>
     </article>
   </li>`;
 }
@@ -51,6 +51,7 @@ function createReviewHTML(review) {
  * Create all reviews HTML and add them to the webpage.
  */
 function fillReviewsHTML(restaurant) {
+  console.log(restaurant);
   const container = document.getElementById('reviews-list');
   let reviewsHTML = '';
 
@@ -171,5 +172,66 @@ window.loadMap = () => {
   button.disabled = true;
   button.getElementsByTagName('div')[0].innerHTML = 'Loading map...';
 };
+
+/*
+ * Handle review form submittion.
+ */
+function submitReview(e) {
+  // prevent the submittion from redirecting the page.
+  e.preventDefault();
+
+  const errorElements = {
+    name: e.target.querySelector('#name-error'),
+    rating: e.target.querySelector('#rating-error'),
+    comments: e.target.querySelector('#comments-error')
+  };
+
+  let elements = {
+    name: e.target.querySelector('.name'),
+    comments: e.target.querySelector('.comments'),
+    rating: e.target.querySelector('.rating input:checked'),
+  };
+
+  let data = {
+    name: elements.name.value,
+    comments: elements.comments.value,
+    // If the user didnt select a rating the element will be null, in that case we default to an empty string.
+    rating: elements.rating ? elements.rating.value : ''
+  };
+
+  // Reset all the error messages.
+  for(let element in errorElements) {
+    errorElements[element].innerHTML = '';
+  }
+  
+  // Will be filled with validation errors.
+  let errors = [];
+
+  // Check that no fields are empty.
+  for(let fieldName in data) {
+    if(data[fieldName].trim() === '') errors.push({fieldName, message: 'This field cannot be empty'});
+  }
+
+  // Add error messages in the form.
+  if(errors.length) {
+    for(let error of errors) {
+      errorElements[error.fieldName].innerHTML = error.message;
+    }
+
+    // return early to avoid submitting the form.
+    return;
+  }
+
+  // Add the Id to the data.
+  data.restaurant_id = (new URL(window.location.href)).searchParams.get('id');
+
+  // Try to add the review.
+  restAPI.postReview(data);
+}
+
+/*
+ * Attach event listener to the review form.
+ */
+document.getElementById('leave-review-form').addEventListener('submit', submitReview);
 
 fetchRestaurantFromURL().catch(error => console.error(error));

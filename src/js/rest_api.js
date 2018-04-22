@@ -148,6 +148,16 @@ class restAPI {
     return cuisines.filter((v, i) => cuisines.indexOf(v) == i);
   }
 
+  /*
+   * Add a new review to a restaurant by Id.
+   */
+  static async postReview(data) {
+    fetch('http://localhost:1337/reviews', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
   /**
    * Restaurant page URL.
    */

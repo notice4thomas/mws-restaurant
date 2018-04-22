@@ -223,4 +223,6 @@ window.loadMap = () => {
   button.getElementsByTagName('div')[0].innerHTML = 'Loading map...';
 };
 
-fetchAndRenderFilters().then(() => window.updateRestaurants());
+fetchAndRenderFilters().then(() => {
+  window.updateRestaurants();
+});
