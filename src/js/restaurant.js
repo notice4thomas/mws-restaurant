@@ -1,5 +1,8 @@
-const restAPI = require('./rest_api');
+import restAPI from './rest_api';
+import reviewForm from './review_form';
+
 let restaurantRequest;
+let reviewsRequest;
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
@@ -24,8 +27,8 @@ function createRatingSVG(rating) {
   let starsSVG = '';
 
   for(let i = 0; i < 5; i++) {
-    const star = '<svg width="14" viewBox="0 0 576 512"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg>';
-    const emptyStar = '<svg width="14" viewBox="0 0 576 512"><path fill="#c9c9c9" d="M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM388.6 312.3l23.7 138.4L288 385.4l-124.3 65.3 23.7-138.4-100.6-98 139-20.2 62.2-126 62.2 126 139 20.2-100.6 98z"></path></svg>';
+    const star = '<svg width="16" viewBox="0 0 576 512"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg>';
+    const emptyStar = '<svg width="16" viewBox="0 0 576 512"><path fill="#d9d9d9" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg>';
     // If the index is smaller than the rating, then add a full star, else add an empty one(this loop runs up to 5)
     starsSVG += (i < rating) ? star : emptyStar;
   }
@@ -41,7 +44,7 @@ function createReviewHTML(review) {
     <article>
       <span class="username">${review.name}</span>
       <span class="rating" role="img" aria-label="Rated ${review.rating} out of 5">${createRatingSVG(review.rating)}</span>
-      <span class="date">${review.date}</span>
+      <span class="date">${(new Date(review.createdAt)).toLocaleString('en-US', { hour12: false })}</span>
       <p class="comments">${review.comments}</p>
     </article>
   </li>`;
@@ -50,17 +53,12 @@ function createReviewHTML(review) {
 /*
  * Create all reviews HTML and add them to the webpage.
  */
-function fillReviewsHTML(restaurant) {
-  console.log(restaurant);
+function fillReviewsHTML(reviews) {
+  console.log(reviews);
   const container = document.getElementById('reviews-list');
   let reviewsHTML = '';
 
-  if (!restaurant.reviews) {
-    reviewsHTML = '<p>No reviews yet!</p>';
-    return;
-  }
-
-  restaurant.reviews.forEach(review => {
+  reviews.reverse().forEach(review => {
     reviewsHTML += createReviewHTML(review);
   });
 
@@ -134,10 +132,13 @@ async function fetchRestaurantFromURL() {
     return;
   }
 
-  restaurantRequest = restAPI.fetchRestaurantById(id);  
+  // Fetch restaurant.
+  restaurantRequest = restAPI.fetchRestaurantById(id);
+  //fetch the reviews for the restaurant.
+  reviewsRequest = restAPI.fetchReviewsByRestaurantId(id);
   fillBreadcrumb(await restaurantRequest);
   fillRestaurantHTML(await restaurantRequest);
-  fillReviewsHTML(await restaurantRequest);
+  fillReviewsHTML(await reviewsRequest);
 }
 
 /**
@@ -173,65 +174,8 @@ window.loadMap = () => {
   button.getElementsByTagName('div')[0].innerHTML = 'Loading map...';
 };
 
-/*
- * Handle review form submittion.
- */
-function submitReview(e) {
-  // prevent the submittion from redirecting the page.
-  e.preventDefault();
-
-  const errorElements = {
-    name: e.target.querySelector('#name-error'),
-    rating: e.target.querySelector('#rating-error'),
-    comments: e.target.querySelector('#comments-error')
-  };
-
-  let elements = {
-    name: e.target.querySelector('.name'),
-    comments: e.target.querySelector('.comments'),
-    rating: e.target.querySelector('.rating input:checked'),
-  };
-
-  let data = {
-    name: elements.name.value,
-    comments: elements.comments.value,
-    // If the user didnt select a rating the element will be null, in that case we default to an empty string.
-    rating: elements.rating ? elements.rating.value : ''
-  };
-
-  // Reset all the error messages.
-  for(let element in errorElements) {
-    errorElements[element].innerHTML = '';
-  }
-  
-  // Will be filled with validation errors.
-  let errors = [];
-
-  // Check that no fields are empty.
-  for(let fieldName in data) {
-    if(data[fieldName].trim() === '') errors.push({fieldName, message: 'This field cannot be empty'});
-  }
-
-  // Add error messages in the form.
-  if(errors.length) {
-    for(let error of errors) {
-      errorElements[error.fieldName].innerHTML = error.message;
-    }
-
-    // return early to avoid submitting the form.
-    return;
-  }
-
-  // Add the Id to the data.
-  data.restaurant_id = (new URL(window.location.href)).searchParams.get('id');
-
-  // Try to add the review.
-  restAPI.postReview(data);
-}
-
-/*
- * Attach event listener to the review form.
- */
-document.getElementById('leave-review-form').addEventListener('submit', submitReview);
-
+// Request the restaurant data and render it.
 fetchRestaurantFromURL().catch(error => console.error(error));
+
+// Initialize the form.
+new reviewForm(document.getElementById('leave-review'), createReviewHTML);

@@ -276,6 +276,17 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 #leave-review {
   background-color: #fff;
   border-radius: 5px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+#leave-review.closed {
+  border: 1px solid #b5d6f1;
+  cursor: pointer;
+}
+
+#leave-review.closed:hover {
+  box-shadow: 0 0 5px #b5d6f1;
 }
 
 #leave-review header {
@@ -300,6 +311,10 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   padding: 20px;
 }
 
+#leave-review.closed form {
+  display: none;
+}
+
 #leave-review input,
 #leave-review textarea {
   width: 100%;
@@ -309,6 +324,11 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   border-radius: 3px;
   margin-bottom: 15px;
 }
+
+#leave-review textarea {
+  display: block;
+}
+
 
 #leave-review input:last-child {
   margin-bottom: 0;
@@ -342,7 +362,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 
 #leave-review .rating input {
-  display: none;
+  opacity: 0;
 }
 
 #leave-review .rating {
@@ -364,7 +384,8 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 
 #leave-review .star {
   display: inline-block;
-  color: #d9d9d9;
+  color: #c9c9c9;
+  padding: 0 1px;
 }
 
 #leave-review .rating input:checked ~ .star,

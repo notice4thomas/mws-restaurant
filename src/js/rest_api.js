@@ -11,7 +11,7 @@ class restAPI {
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-    return 'http://localhost:1337/restaurants';
+    return 'http://localhost:1337/';
   }
 
   /**
@@ -24,7 +24,7 @@ class restAPI {
 
     // Fire async tasks before doing anything.
     const cachedRestaurants = idbAPI.getAll();
-    const fetchedRestaurants = fetch(this.DATABASE_URL).then(response => response.json());
+    const fetchedRestaurants = fetch(this.DATABASE_URL + 'restaurants').then(response => response.json());
 
     // Update the cache after the network request is finished.
     fetchedRestaurants.then(restaurants => {
@@ -57,7 +57,7 @@ class restAPI {
 
     // Fire async tasks before doing anything.
     const cachedRestaurant = idbAPI.get(id);
-    const fetchedRestaurant = fetch(this.DATABASE_URL + '/' + id).then(response => response.json());
+    const fetchedRestaurant = fetch(this.DATABASE_URL + 'restaurants/' + id).then(response => response.json());
 
     // Update the cache after the network request is finished.
     fetchedRestaurant.then(restaurant => {
@@ -149,13 +149,21 @@ class restAPI {
   }
 
   /*
+   * Fetch reviews for a specific resttaurant by Id.
+   * Returns a promise.
+   */
+  static async fetchReviewsByRestaurantId(id) {
+    return fetch(this.DATABASE_URL + 'reviews/?restaurant_id=' + id).then(response => response.json());
+  }
+
+  /*
    * Add a new review to a restaurant by Id.
    */
   static async postReview(data) {
-    fetch('http://localhost:1337/reviews', {
+    return fetch(this.DATABASE_URL + 'reviews', {
       method: 'POST',
       body: JSON.stringify(data)
-    });
+    }).then(response => response.json());
   }
 
   /**
