@@ -54,7 +54,6 @@ function createReviewHTML(review) {
  * Create all reviews HTML and add them to the webpage.
  */
 function fillReviewsHTML(reviews) {
-  console.log(reviews);
   const container = document.getElementById('reviews-list');
   let reviewsHTML = '';
 
