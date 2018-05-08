@@ -95,6 +95,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 
 .width-limiter {
+  position: relative; /* used to haouse some absolute elements */
   max-width: 650px;
   margin: 0 auto;
 }
@@ -226,6 +227,37 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   letter-spacing: 0;
   margin: 0 0 30px;
   line-height: 1.1;
+}
+
+#favorite {
+  position: absolute;
+  right: 0;
+  color: #fff;
+  padding: 10px 10px 8px;
+  margin: 10px 10px 0 0;
+
+  border: 0;
+  background-color: rgba(0,0,0,0.6);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#favorite:active {
+  background-color: rgba(0,0,0,0.7);
+}
+
+/* Rotates the loading icon */
+@keyframes spin {
+  from {
+      transform:rotate(0deg);
+  }
+  to {
+      transform:rotate(360deg);
+  }
+}
+
+#favorite .loading {
+  animation: spin 2s infinite linear;
 }
 
 #restaurant-img {

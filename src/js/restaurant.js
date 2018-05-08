@@ -1,8 +1,10 @@
 import restAPI from './rest_api';
 import reviewForm from './review_form';
 
+let restaurantId;
 let restaurantRequest;
 let reviewsRequest;
+let isFavorite;
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
@@ -83,13 +85,66 @@ function createImageElement(restaurant) {
   return picture;
 }
 
+/*
+ * converts "true" or "false" strings into the equivalent boolean.
+ */
+function stringToBoolean(string) {
+  // Validate the input.
+  if(string !== 'true' && string !== 'false') throw Error('Invalid string representation of a bloolean: ' + string);
+
+  return string === 'true' ? true : false;
+}
+
+/*
+ * Create favorite button HTML
+ */
+function favoriteButtonHTML() {
+  if(isFavorite) return '<svg width="28" aria-hidden="true" viewBox="0 0 512 512"><path fill="currentColor" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"></path></svg>';
+  return '<svg width="28" aria-hidden="true" viewBox="0 0 512 512"><path fill="currentColor" d="M458.4 64.3C400.6 15.7 311.3 23 256 79.3 200.7 23 111.4 15.6 53.6 64.3-21.6 127.6-10.6 230.8 43 285.5l175.4 178.7c10 10.2 23.4 15.9 37.6 15.9 14.3 0 27.6-5.6 37.6-15.8L469 285.6c53.5-54.7 64.7-157.9-10.6-221.3zm-23.6 187.5L259.4 430.5c-2.4 2.4-4.4 2.4-6.8 0L77.2 251.8c-36.5-37.2-43.9-107.6 7.3-150.7 38.9-32.7 98.9-27.8 136.5 10.5l35 35.7 35-35.7c37.8-38.5 97.8-43.2 136.5-10.6 51.1 43.1 43.5 113.9 7.3 150.8z"></path></svg>';
+}
+
+function favoriteClicked() {
+  // Get the button element
+  let button = document.getElementById('favorite');
+  // Change the icon in the button to a loading icon.
+  button.innerHTML = '<svg width="28" aria-hidden="true" viewBox="0 0 512 512" class="loading"><path fill="currentColor" d="M304 48c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48 48 21.49 48 48zm-48 368c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zm208-208c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zM96 256c0-26.51-21.49-48-48-48S0 229.49 0 256s21.49 48 48 48 48-21.49 48-48zm12.922 99.078c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.491-48-48-48zm294.156 0c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.49-48-48-48zM108.922 60.922c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.491-48-48-48z"></path></svg>';
+  // Disable the button tp prevent multiple requests.
+  button.disabled = true;
+
+  // Make the API request and then update the button.
+  restAPI.favoriteById(restaurantId, !isFavorite).then(response => {
+    // Update the local favorite indicator.
+    isFavorite = stringToBoolean(response.is_favorite);
+    button.innerHTML = favoriteButtonHTML();
+    button.disabled = false;
+  });
+}
+
+/*
+ * Set Up thhe favorite button.
+ */
+function setUpFavoriteButton(restaurant) {
+  // Save the button element.
+  let favoriteElement = document.getElementById('favorite');
+
+  // Save the state on an external var.
+  isFavorite = stringToBoolean(restaurant.is_favorite);
+
+  // Render an the right image for each state.
+  favoriteElement.innerHTML = favoriteButtonHTML();
+
+  favoriteElement.addEventListener('click', e => favoriteClicked(e));
+}
+
 /**
  * Create restaurant HTML and add it to the webpage
  */
 function fillRestaurantHTML(restaurant) {
   // Set the restaurant's name
-  const title = document.getElementById('restaurant-name');
-  title.innerHTML = restaurant.name;
+  document.getElementById('restaurant-name').innerHTML = restaurant.name;
+
+  // Create the favorite button
+  setUpFavoriteButton(restaurant);
 
   // Set the restaurant's cuisine
   document.getElementById('restaurant-cuisine').innerHTML = restaurant.cuisine_type;
@@ -122,19 +177,19 @@ function fillBreadcrumb(restaurant) {
  * Get current restaurant from page URL.
  */
 async function fetchRestaurantFromURL() {
-  // Get a parameter by name from page URL.
-  const id = (new URL(window.location.href)).searchParams.get('id');
+  // Get a parameter by name from page URL and save it in an external var.
+  restaurantId = (new URL(window.location.href)).searchParams.get('id');
 
   // If there is no id in the url return early and log the error.
-  if (!id) {
+  if (!restaurantId) {
     console.error('No restaurant id in URL');
     return;
   }
 
   // Fetch restaurant.
-  restaurantRequest = restAPI.fetchRestaurantById(id);
+  restaurantRequest = restAPI.fetchRestaurantById(restaurantId);
   //fetch the reviews for the restaurant.
-  reviewsRequest = restAPI.fetchReviewsByRestaurantId(id);
+  reviewsRequest = restAPI.fetchReviewsByRestaurantId(restaurantId);
   fillBreadcrumb(await restaurantRequest);
   fillRestaurantHTML(await restaurantRequest);
   fillReviewsHTML(await reviewsRequest);

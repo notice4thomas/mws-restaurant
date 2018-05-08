@@ -16,6 +16,12 @@ export default class ReviewForm {
 
     // Add event to the form container only when its closed. this is used in order to reveal the form.
     document.querySelector('#leave-review.closed').addEventListener('click', this.open);
+    document.querySelector('#leave-review.closed').addEventListener('keypress', e => {
+      let key = e.which || e.keyCode;
+      // this.open will asume that `this` refers to the target element, so we bind this to the target manually.
+      if(key === 13) this.open.call(e.target);
+    });
+    
 
     // Save the elements of the form fields.
     this.fieldElements = {

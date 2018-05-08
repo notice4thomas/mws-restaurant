@@ -196,6 +196,28 @@ class restAPI {
     );
     return marker;
   }
+
+  /*
+   * Add a restaurant from favorites by using an id.
+   * This function receives two arguments, first one is the ID nad the second one is a boolean that tells the function
+   * either to add or remove the restaurant from favorites.
+   * 
+   * The default for the second agrument is true.
+   */
+  static async favoriteById(id, favorite = true) {
+    // Create the query string based on the `favorite` boolean.
+    const queryString = this.DATABASE_URL + 'restaurants/' + id + '/?is_favorite=' + favorite;
+    // Save the request for later.
+    const request = fetch(queryString, {method: 'POST'}).then(response => response.json());
+
+    // Update the cache after the network request is finished(it will return the entire restaurant).
+    request.then(restaurant => {
+      idbAPI.add(restaurant);
+      idbAPI.cleanUp(); // Remove old restaurants.
+    }).catch(error => console.error(error));
+
+    return request;
+  }
 }
 
 module.exports = restAPI;
