@@ -382,6 +382,10 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   background-color: #e89b48;
 }
 
+#leave-review .submit:disabled {
+  background-color: rgba(0,0,0,0.4);
+}
+
 #leave-review .comments {
   height: 5em;
 }

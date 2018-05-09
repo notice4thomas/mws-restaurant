@@ -1,5 +1,6 @@
 import idbAPI from './idb_api';
 let restaurantsList;
+let restaurantReviews;
 
 /**
  * helper for the restaurants api
@@ -23,13 +24,13 @@ export default class restAPI {
     if(restaurantsList) return restaurantsList;
 
     // Fire async tasks before doing anything.
-    const cachedRestaurants = idbAPI.getAll();
+    const cachedRestaurants = idbAPI.getAllRestaurants();
     const fetchedRestaurants = fetch(this.DATABASE_URL + 'restaurants').then(response => response.json());
 
     // Update the cache after the network request is finished.
     fetchedRestaurants.then(restaurants => {
-      idbAPI.addMany(restaurants);
-      idbAPI.cleanUp(); // Remove old restaurants.
+      idbAPI.addRestaurants(restaurants);
+      idbAPI.cleanUpRestaurants(); // Remove old restaurants.
     }).catch(error => console.error(error));
 
     // Get the restaurants from the cache first, and if it is empty, then wait for the network.
@@ -56,13 +57,13 @@ export default class restAPI {
     // TODO: I need to DRY this a bit.
 
     // Fire async tasks before doing anything.
-    const cachedRestaurant = idbAPI.get(id);
+    const cachedRestaurant = idbAPI.getRestaurantById(id);
     const fetchedRestaurant = fetch(this.DATABASE_URL + 'restaurants/' + id).then(response => response.json());
 
     // Update the cache after the network request is finished.
     fetchedRestaurant.then(restaurant => {
-      idbAPI.add(restaurant);
-      idbAPI.cleanUp(); // Remove old restaurants.
+      idbAPI.addRestaurant(restaurant);
+      idbAPI.cleanUpRestaurants(); // Remove old restaurants.
     }).catch(error => console.error(error));
 
     // Get the restaurants from the cache first, and if it is empty, then wait for the network.
@@ -152,18 +153,54 @@ export default class restAPI {
    * Fetch reviews for a specific resttaurant by Id.
    * Returns a promise.
    */
-  static async fetchReviewsByRestaurantId(id) {
-    return fetch(this.DATABASE_URL + 'reviews/?restaurant_id=' + id).then(response => response.json());
+  static async fetchReviewsByRestaurantId(restaurantId) {
+    // Make sure we only make this request once.
+    if(restaurantReviews) return restaurantReviews;
+
+    // Fire async tasks before doing anything.
+    const cachedReviews = idbAPI.getReviewsByRestaurantId(restaurantId);
+    const fetchedReviews = fetch(this.DATABASE_URL + 'reviews/?restaurant_id=' + restaurantId).then(response => response.json());
+
+    // Update the cache after the network request is finished.
+    fetchedReviews.then(reviews => {
+      idbAPI.addReviews(reviews);
+      idbAPI.cleanUpReviews(); // Remove old reviews.
+    }).catch(error => console.error(error));
+
+    // Get the reviews from the cache first, and if it is empty, then wait for the network.
+    let reviews = new Promise(async resolve => {
+      if((await cachedReviews).length) {
+        resolve(cachedReviews);
+        return;
+      }
+
+      resolve(fetchedReviews);
+    });
+
+    // Save them in a var so we know the request was already made.
+    restaurantReviews = reviews;
+
+    return restaurantReviews;
   }
 
   /*
-   * Add a new review to a restaurant by Id.
+   * Add a new review to a restaurant by Id and cache it in the local DB.
    */
   static async postReview(data) {
-    return fetch(this.DATABASE_URL + 'reviews', {
+    // Make the network post request.
+    const postRequest = fetch(this.DATABASE_URL + 'reviews', {
       method: 'POST',
       body: JSON.stringify(data)
     }).then(response => response.json());
+
+    // Update the cache after the network request is finished.
+    postRequest.then(review => {
+      idbAPI.addReview(review);
+      idbAPI.cleanUpReviews(); // Remove old reviews.
+    }).catch(error => console.error(error));
+
+    // Finally return the returned review from the network(with the id and date).
+    return postRequest;
   }
 
   /**
@@ -212,8 +249,8 @@ export default class restAPI {
 
     // Update the cache after the network request is finished(it will return the entire restaurant).
     request.then(restaurant => {
-      idbAPI.add(restaurant);
-      idbAPI.cleanUp(); // Remove old restaurants.
+      idbAPI.addRestaurant(restaurant);
+      idbAPI.cleanUpRestaurants(); // Remove old restaurants.
     }).catch(error => console.error(error));
 
     return request;

@@ -10,6 +10,7 @@ export default class ReviewForm {
     this.formContainer = formContainer;
     this.createReviewHTML = createReviewHTML;
     this.form = formContainer.querySelector('form');
+    this.submitButton = this.form.querySelector("input[type='submit']");
 
     // Add an event listener to submit events.
     this.form.addEventListener('submit', e => this.submit(e));
@@ -70,6 +71,10 @@ export default class ReviewForm {
       }
 
       this.fieldElements[fieldName].value = '';
+
+      // Re-enable the form, and reset the submit button text.
+      this.submitButton.disabled = false;
+      this.submitButton.value = 'Submit Review';
     }
   }
 
@@ -97,11 +102,16 @@ export default class ReviewForm {
     // prevent the submittion from redirecting the page.
     e.preventDefault();
 
+    // Disable the form to prevent multiple submittions, and change the button text to "submitting".
+    this.submitButton.disabled = true;
+    this.submitButton.value = 'submitting...';
+
     let data = {
       name: this.fieldElements.name.value.trim(),
       comments: this.fieldElements.comments.value.trim(),
       // If the user didnt select a rating the element will be null, in that case we default to an empty string.
-      rating: this.fieldElements.rating.value.trim()
+      // Also convert the value to a number.
+      rating: Number(this.fieldElements.rating.value.trim())
     };
 
     this.resetErrors();
@@ -117,8 +127,8 @@ export default class ReviewForm {
       return;
     }
 
-    // Add the restaurant's Id to the data.
-    data.restaurant_id = (new URL(window.location.href)).searchParams.get('id');
+    // Add the restaurant's Id to the data after converting it to a number.
+    data.restaurant_id = Number((new URL(window.location.href)).searchParams.get('id'));
 
     // Try to post the review to the server and local DB.
     // And then clean up the form and update the DOM with the new reivew from the DB(with date and stuff).

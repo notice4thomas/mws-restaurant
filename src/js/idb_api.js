@@ -9,8 +9,12 @@ let database;
 
 // Installation of the database.
 function install(upgradeDB) {
-  // Create an ObjectStore for the positions.
-  upgradeDB.createObjectStore('restaurants', { keyPath: 'id'});
+  // Create the object store for restaurants.
+  upgradeDB.createObjectStore('restaurants', { keyPath: 'id' });
+  // Create the object store for reviews.
+  let reviewsOS = upgradeDB.createObjectStore('reviews', { keyPath: 'id' });
+  // Create an index for reviews by restaurant Id.
+  reviewsOS.createIndex('restaurant_id', 'restaurant_id', { unique: false });
 }
 
 // Will return the database promise, or initialize if it wasn't required before.
@@ -25,7 +29,11 @@ function getDatabase() {
  * The API
  */
 export default {
-  async add(restaurant) {
+  /*
+   * Restaurants Methods.
+   */
+  
+  async addRestaurant(restaurant) {
     let tx = (await getDatabase()).transaction('restaurants', 'readwrite');
     let store = tx.objectStore('restaurants');
 
@@ -33,11 +41,11 @@ export default {
     return tx.complete;
   },
 
-  async addMany(restaurantsArray) {
-    return Promise.all(restaurantsArray.map(restaurant => this.add(restaurant)));
+  async addRestaurants(restaurantsArray) {
+    return Promise.all(restaurantsArray.map(restaurant => this.addRestaurant(restaurant)));
   },
 
-  async remove(restaurantId) {
+  async removeRestaurantById(restaurantId) {
     let tx = (await getDatabase()).transaction('restaurants', 'readwrite');
     let store = tx.objectStore('restaurants');
 
@@ -46,14 +54,14 @@ export default {
     return tx.complete;
   },
 
-  async get(id) {
+  async getRestaurantById(id) {
     let tx = (await getDatabase()).transaction('restaurants', 'readwrite');
     let store = tx.objectStore('restaurants');
 
     return store.get(Number(id));
   },
 
-  async getAll() {
+  async getAllRestaurants() {
     let tx = (await getDatabase()).transaction('restaurants', 'readwrite');
     let store = tx.objectStore('restaurants');
 
@@ -61,7 +69,7 @@ export default {
   },
 
   // Make sure there only are a max of 30 cached restaurants.
-  async cleanUp() {
+  async cleanUpRestaurants() {
     let tx = (await getDatabase()).transaction('restaurants', 'readwrite');
     let store = tx.objectStore('restaurants');
 
@@ -72,5 +80,43 @@ export default {
       cursor.delete();
       return cursor.continue().then(deleteRest);
     });
-  }
+  },
+
+  /*
+   * Reviews Methods
+   */
+  
+  async addReview(review) {
+    let tx = (await getDatabase()).transaction('reviews', 'readwrite');
+    let store = tx.objectStore('reviews');
+
+    store.put(review);
+    return tx.complete;
+  },
+
+  async addReviews(reviewsArray) {
+    return Promise.all(reviewsArray.map(review => this.addReview(review)));
+  },
+
+  async getReviewsByRestaurantId(restaurantId) {
+    let tx = (await getDatabase()).transaction('reviews', 'readwrite');
+    let store = tx.objectStore('reviews');
+    let index = store.index('restaurant_id');
+
+    return index.getAll(Number(restaurantId));
+  },
+
+  // Make sure there only are a max of 10 cached reviews for each restaurant.
+  async cleanUpReviews() {
+    let tx = (await getDatabase()).transaction('reviews', 'readwrite');
+    let store = tx.objectStore('reviews');
+
+    return store.openCursor(null, 'prev').then( cursor => {
+      return cursor.advance(15);
+    }).then(function deleteRest(cursor) {
+      if(!cursor) return;
+      cursor.delete();
+      return cursor.continue().then(deleteRest);
+    });
+  },
 };
