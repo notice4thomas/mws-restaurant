@@ -2,7 +2,7 @@
  * Importing this file will return a promise to the 'raw' idb connection.
  * This file is also in charge of the installation of the database.
  */
-const idb = require('idb');
+import idb from 'idb';
 const name = 'restaurant reviews';
 const version = 1;
 let database;
@@ -24,7 +24,7 @@ function getDatabase() {
 /*
  * The API
  */
-module.exports = {
+export default {
   async add(restaurant) {
     let tx = (await getDatabase()).transaction('restaurants', 'readwrite');
     let store = tx.objectStore('restaurants');

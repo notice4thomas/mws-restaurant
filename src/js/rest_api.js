@@ -1,10 +1,10 @@
-const idbAPI = require('./idb_api');
+import idbAPI from './idb_api';
 let restaurantsList;
 
 /**
  * helper for the restaurants api
  */
-class restAPI {
+export default class restAPI {
 
   /**
    * Database URL.
@@ -219,5 +219,3 @@ class restAPI {
     return request;
   }
 }
-
-module.exports = restAPI;
