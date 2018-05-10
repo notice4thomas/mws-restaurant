@@ -122,6 +122,13 @@ function favoriteClicked() {
     isFavorite = stringToBoolean(response.is_favorite);
     button.innerHTML = favoriteButtonHTML();
     button.disabled = false;
+
+    // Set the right aria label.
+    if(isFavorite) {
+      button.setAttribute('aria-label', 'Remove restaurant from favorites');
+    } else {
+      button.setAttribute('aria-label', 'Mark restaurant as favorite');
+    }
   });
 }
 
@@ -137,6 +144,9 @@ function setUpFavoriteButton(restaurant) {
 
   // Render an the right image for each state.
   favoriteElement.innerHTML = favoriteButtonHTML();
+
+  // If the restaurant is favorited, then change the 'aria-label' to "remove from favorites".
+  if(isFavorite) favoriteElement.setAttribute('aria-label', 'Remove restaurant from favorites');
 
   favoriteElement.addEventListener('click', e => favoriteClicked(e));
 }
