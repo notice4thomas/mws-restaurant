@@ -86,13 +86,18 @@ function createImageElement(restaurant) {
 }
 
 /*
- * converts "true" or "false" strings into the equivalent boolean.
+ * Converts the strings 'true' or 'false' into booleans, and coerces all the other values according to the "normal" js rules.
+ * This function is necesarry because 'is_favorite' that we get from the server can be a boolean, a strgin or undefined...
  */
-function stringToBoolean(string) {
+function stringToBoolean(value) {
   // Validate the input.
-  if(string !== 'true' && string !== 'false') throw Error('Invalid string representation of a bloolean: ' + string);
+  if(typeof value === 'string') {
+    if(value !== 'true' && value !== 'false') throw Error('In case of a string the only acceptable values are "true" or "false"');
+  }
 
-  return string === 'true' ? true : false;
+  // return the right boolean.
+  if(value === 'false' || !value) return false;
+  return true;
 }
 
 /*
