@@ -1,6 +1,5 @@
 import idbAPI from './idb_api';
 let restaurantsList;
-let restaurantReviews;
 
 /**
  * helper for the restaurants api
@@ -154,9 +153,6 @@ export default class restAPI {
    * Returns a promise.
    */
   static async fetchReviewsByRestaurantId(restaurantId) {
-    // Make sure we only make this request once.
-    if(restaurantReviews) return restaurantReviews;
-
     // Fire async tasks before doing anything.
     const cachedReviews = idbAPI.getReviewsByRestaurantId(restaurantId);
     const fetchedReviews = fetch(this.DATABASE_URL + 'reviews/?restaurant_id=' + restaurantId).then(response => response.json());
@@ -177,10 +173,7 @@ export default class restAPI {
       resolve(fetchedReviews);
     });
 
-    // Save them in a var so we know the request was already made.
-    restaurantReviews = reviews;
-
-    return restaurantReviews;
+    return reviews;
   }
 
   /*

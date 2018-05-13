@@ -449,13 +449,23 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   display: none
 }
 
-/* Already left reviews */
+/* Reviews list (online, and offline ones.) */
 #reviews-list {
   margin: 0;
   padding: 0;
 }
 
-#reviews-list li {
+#offline-reviews-list {
+  margin: 0 0 30px;
+  padding: 0;
+}
+
+#offline-reviews-list:empty {
+  display: none;
+}
+
+#reviews-list li,
+#offline-reviews-list li {
   display: block;
   list-style-type: none;
   overflow: hidden;
@@ -464,24 +474,41 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   padding: 20px 20px 10px;
   background-color: #fff;
   border-radius: 5px;
+
+
 }
 
-#reviews-list li:last-child {
+#reviews-list li:last-child,
+#offline-reviews-list li:last-child {
   margin: 0;
 }
 
-#reviews-list .review .username {
+#reviews-list .review .username,
+#offline-reviews-list .review .username {
   font-size: 18px;
   color: #0275d8;
   margin-right: 10px;
 }
 
-#reviews-list .review .rating {
+#reviews-list .review .rating,
+#offline-reviews-list .review .rating {
   margin-right: 10px;
 }
 
+#offline-reviews-list li:after {
+  display: block;
+  content: "Review not yet posted due to a connection issues. Retrying in a few seconds...";
+  color: #fff;
+  font-weight: bold;
+  background-color: #ff6a6a;
+  padding: 10px 15px;
+  margin: 0 -20px -10px;
+  border-radius: 0 0 3px 3px;
+}
 
-#reviews-list .review .rating svg {
+
+#reviews-list .review .rating svg,
+#offline-reviews-list .review .rating svg {
   margin-right: 3px;
   fill: #ffa94d;
 }
@@ -490,7 +517,12 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   color: #757575;
 }
 
-#reviews-list .review .comments {
+#offline-reviews-list .review .date {
+  display: none;
+}
+
+#reviews-list .review .comments,
+#offline-reviews-list .review .comments {
   margin-top: 15px;
   font-size: 11pt;
 }

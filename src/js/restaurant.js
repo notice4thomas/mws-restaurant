@@ -1,7 +1,9 @@
 import restAPI from './rest_api';
 import reviewForm from './review_form';
+import offlineReviewsManager from './offline_reviews_manager';
 
-let restaurantId;
+// Get the id from the url bar.
+window.restaurantId = (new URL(window.location.href)).searchParams.get('id');
 let restaurantRequest;
 let reviewsRequest;
 let isFavorite;
@@ -24,6 +26,7 @@ function createRestaurantHoursHTML(restaurant) {
 
 /*
  * Create a stars SVG for the rating.
+ * This function is exported.
  */
 function createRatingSVG(rating) {
   let starsSVG = '';
@@ -40,9 +43,10 @@ function createRatingSVG(rating) {
 
 /**
  * Create single review HTML and return it.
+ * The second argument shhould be true if the review is an "offline review".
  */
-function createReviewHTML(review) {
-  return `<li class="review">
+export function createReviewHTML(review) {
+  return `<li class="review" ${review.is_offline ? 'data-offline-id=' + '"'+ review.id +'"' : ''}>
     <article>
       <span class="username">${review.name}</span>
       <span class="rating" role="img" aria-label="Rated ${review.rating} out of 5">${createRatingSVG(review.rating)}</span>
@@ -55,8 +59,8 @@ function createReviewHTML(review) {
 /*
  * Create all reviews HTML and add them to the webpage.
  */
-function fillReviewsHTML(reviews) {
-  const container = document.getElementById('reviews-list');
+export function fillReviewsHTML(reviews) {
+  let container = document.getElementById('reviews-list');
   let reviewsHTML = '';
 
   reviews.reverse().forEach(review => {
@@ -117,7 +121,7 @@ function favoriteClicked() {
   button.disabled = true;
 
   // Make the API request and then update the button.
-  restAPI.favoriteById(restaurantId, !isFavorite).then(response => {
+  restAPI.favoriteById(window.window.restaurantId, !isFavorite).then(response => {
     // Update the local favorite indicator.
     isFavorite = stringToBoolean(response.is_favorite);
     button.innerHTML = favoriteButtonHTML();
@@ -192,22 +196,22 @@ function fillBreadcrumb(restaurant) {
  * Get current restaurant from page URL.
  */
 async function fetchRestaurantFromURL() {
-  // Get a parameter by name from page URL and save it in an external var.
-  restaurantId = (new URL(window.location.href)).searchParams.get('id');
-
   // If there is no id in the url return early and log the error.
-  if (!restaurantId) {
+  if (!window.restaurantId) {
     console.error('No restaurant id in URL');
     return;
   }
 
   // Fetch restaurant.
-  restaurantRequest = restAPI.fetchRestaurantById(restaurantId);
+  restaurantRequest = restAPI.fetchRestaurantById(window.restaurantId);
   //fetch the reviews for the restaurant.
-  reviewsRequest = restAPI.fetchReviewsByRestaurantId(restaurantId);
+  reviewsRequest = restAPI.fetchReviewsByRestaurantId(window.restaurantId);
+  // Get the "offline reviews" from the IDB.
+  let offlineReviewsPromise = offlineReviewsManager.getAllReviews();
+
   fillBreadcrumb(await restaurantRequest);
   fillRestaurantHTML(await restaurantRequest);
-  fillReviewsHTML(await reviewsRequest);
+  fillReviewsHTML(await reviewsRequest, await offlineReviewsPromise);
 }
 
 /**

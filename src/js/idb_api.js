@@ -15,6 +15,8 @@ function install(upgradeDB) {
   let reviewsOS = upgradeDB.createObjectStore('reviews', { keyPath: 'id' });
   // Create an index for reviews by restaurant Id.
   reviewsOS.createIndex('restaurant_id', 'restaurant_id', { unique: false });
+  // Create the object store for Offline reviews.
+  upgradeDB.createObjectStore('offline_reviews', { keyPath: 'id', autoIncrement: true });
 }
 
 // Will return the database promise, or initialize if it wasn't required before.
@@ -112,11 +114,48 @@ export default {
     let store = tx.objectStore('reviews');
 
     return store.openCursor(null, 'prev').then( cursor => {
-      return cursor.advance(15);
+      return cursor.advance(100);
     }).then(function deleteRest(cursor) {
       if(!cursor) return;
       cursor.delete();
       return cursor.continue().then(deleteRest);
     });
   },
+
+  /*
+   * Offline Reviews Methods
+   */
+
+  // Add a single review to the offline db.
+  async addOfflineReview(review) {
+    let tx = (await getDatabase()).transaction('offline_reviews', 'readwrite');
+    let store = tx.objectStore('offline_reviews');
+
+    // Save the id
+    const id = store.put(review);
+
+    // Wait for the transaction to finish.
+    await tx.complete;
+
+    // return the id.
+    return id;
+  },
+
+  // Remove a single review by its Id.
+  async removeOfflineReviewById(id) {
+    let tx = (await getDatabase()).transaction('offline_reviews', 'readwrite');
+    let store = tx.objectStore('offline_reviews');
+
+    store.delete(id);
+
+    return tx.complete;
+  },
+
+  // Get all the offline reviews from the db.
+  async getAllOfflineReviews() {
+    let tx = (await getDatabase()).transaction('offline_reviews', 'readwrite');
+    let store = tx.objectStore('offline_reviews');
+
+    return store.getAll();
+  }
 };

@@ -1,4 +1,5 @@
 import restAPI from './rest_api';
+import offlineReviewsManager from './offline_reviews_manager';
 
 export default class ReviewForm {
 
@@ -135,6 +136,13 @@ export default class ReviewForm {
     restAPI.postReview(data).then(review => {
       // Add the review to the DOM.
       this.addReviewToPage(review);
+
+      // reset the input fields.
+      this.resetForm();
+  
+    }).catch(() => {
+      // If the review request failed, add it to the offline reviews queue.
+      offlineReviewsManager.addReview(data);
 
       // reset the input fields.
       this.resetForm();
