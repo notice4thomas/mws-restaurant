@@ -18,21 +18,15 @@ First clone and install all the dependencies by running:
 $ npm install
 ```
 
-Then build it by running
+Then build and run the local version by running:
 ```
-$ npm run build
-```
-
-Now `cd` into the freshly built project in `dist/` and serve it
-```
-$ cd dist/
-$ python -m SimpleHTTPServer 8000
+$ npm run start
 ```
 
 Now the project is running on localhost:8000 but we have one thing left.
 
 #### Step 2: Run the "Local Development API Server"
-Run the "Local Development API Server" which can be found here: https://github.com/udacity/mws-restaurant-stage-2
+Run the "Local Development API Server" which can be found here: https://github.com/udacity/mws-restaurant-stage-3
 
 ## Directory guide
 All the code resides inside the `src` folder.
@@ -42,8 +36,10 @@ In there you will find three sub folders:
  - `style` - All the css styles
 
 ## Overview and notes
-The project is currently in **Stage 2**, which means that it fully responsive, hopefully, accessible and has a good offline experience, in addition, it currently has a consistent score of 78/100/93 on the lighthouse audits: Performance/WPA/A11y
+The project is currently in **Stage 3** and complies with the stage 3 rubic:
+1. Fully Responsive - **DONE**
+2. Fully accessible - **DONE**
+3. Pages that were visited are fully accesible offline: **DONE**
+4. Lighthohuse audits score(consistently) over 90: **DONE**
 
-Other than trying to meet the Requirements for this stage, I also tried to improve the UI, and use the latest CSS and JS tech when possible, but there are still some improvements needed in that area.
-
-I intentionally didn't use any polyfills for new features, I intended it to be used in new browsers.
+NOTE: I intentionally didn't use any polyfills for new features, I intended it to be used in new browsers.
